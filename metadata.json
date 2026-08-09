@@ -1,0 +1,6 @@
+{
+  "name": "Sistem POS Tablet & Web Menu Cafe",
+  "description": "Sistem POS Tablet Kasir, Web Menu Pelanggan self-order QR, dan Dashboard Admin Manajemen Cafe dengan sinkronisasi real-time.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

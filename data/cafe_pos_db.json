@@ -1,0 +1,666 @@
+{
+  "users": [
+    {
+      "user_id": 1,
+      "name": "Budi Santoso (Owner)",
+      "role": "admin",
+      "username": "admin",
+      "password_hash": "$2b$10$G5MDddSup2P7.74MNfKA6.maOs2rvwqg2QdYVs8OMxjqMvP0pfedW",
+      "created_at": "2026-07-09T18:07:55.078Z"
+    },
+    {
+      "user_id": 2,
+      "name": "Siti Rahma",
+      "role": "kasir",
+      "username": "kasir",
+      "password_hash": "$2b$10$74R7EB7tyYlHqYShqemZ..kNX6SdyI8o6h6qvzoLE3MjSzZQuc/hK",
+      "created_at": "2026-07-19T18:07:55.078Z"
+    },
+    {
+      "user_id": 3,
+      "name": "Dimas Pratama",
+      "role": "kasir",
+      "username": "kasir2",
+      "password_hash": "$2b$10$74R7EB7tyYlHqYShqemZ..kNX6SdyI8o6h6qvzoLE3MjSzZQuc/hK",
+      "created_at": "2026-07-29T18:07:55.078Z"
+    }
+  ],
+  "tables": [
+    {
+      "table_id": 1,
+      "table_number": "Meja 01",
+      "capacity": 2,
+      "area": "Area Indoor",
+      "status": "terisi"
+    },
+    {
+      "table_id": 2,
+      "table_number": "Meja 02",
+      "capacity": 4,
+      "area": "Area Indoor",
+      "status": "terisi"
+    },
+    {
+      "table_id": 3,
+      "table_number": "Meja 03",
+      "capacity": 6,
+      "area": "Area Indoor",
+      "status": "terisi"
+    },
+    {
+      "table_id": 4,
+      "table_number": "Meja 04",
+      "capacity": 4,
+      "area": "Area Indoor",
+      "status": "kosong"
+    },
+    {
+      "table_id": 5,
+      "table_number": "Meja 05",
+      "capacity": 2,
+      "area": "Area Indoor",
+      "status": "kosong"
+    },
+    {
+      "table_id": 6,
+      "table_number": "Meja 06",
+      "capacity": 6,
+      "area": "Area Indoor",
+      "status": "terisi"
+    },
+    {
+      "table_id": 7,
+      "table_number": "Meja 07",
+      "capacity": 2,
+      "area": "Area Outdoor",
+      "status": "kosong"
+    },
+    {
+      "table_id": 8,
+      "table_number": "Meja 08",
+      "capacity": 4,
+      "area": "Area Outdoor",
+      "status": "kosong"
+    },
+    {
+      "table_id": 9,
+      "table_number": "Meja 09",
+      "capacity": 6,
+      "area": "Area Outdoor",
+      "status": "kosong"
+    },
+    {
+      "table_id": 10,
+      "table_number": "Meja 10",
+      "capacity": 4,
+      "area": "VIP Room",
+      "status": "kosong"
+    },
+    {
+      "table_id": 11,
+      "table_number": "Meja 11",
+      "capacity": 2,
+      "area": "VIP Room",
+      "status": "kosong"
+    },
+    {
+      "table_id": 12,
+      "table_number": "Meja 12",
+      "capacity": 6,
+      "area": "VIP Room",
+      "status": "kosong"
+    }
+  ],
+  "menu_items": [
+    {
+      "item_id": 1,
+      "name": "Kopi Susu Gula Aren",
+      "category": "Kopi",
+      "price": 22000,
+      "description": "Espresso blend Arabica & Robusta dengan susu segar dan gula aren organik khas Nusantara.",
+      "photo_url": "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 2,
+      "name": "Caramel Macchiato Ice",
+      "category": "Kopi",
+      "price": 28000,
+      "description": "Susu lembut dengan sirup vanila, layer espresso bold, dan drizzle saus karamel leleh.",
+      "photo_url": "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 3,
+      "name": "Americano / Long Black",
+      "category": "Kopi",
+      "price": 18000,
+      "description": "Double shot espresso dengan air panas/dingin murni, aroma fruity nutty menyegarkan.",
+      "photo_url": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 4,
+      "name": "Cafe Latte Art",
+      "category": "Kopi",
+      "price": 25000,
+      "description": "Espresso dengan steamed milk creamy bertekstur microfoam lembut dan latte art indah.",
+      "photo_url": "https://images.unsplash.com/photo-1534778101976-62847782c213?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 5,
+      "name": "Matcha Latte Uji Kyoto",
+      "category": "Non-Kopi",
+      "price": 26000,
+      "description": "Bubuk green tea matcha otentik Jepang dipadukan susu creamy segar manis seimbang.",
+      "photo_url": "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 6,
+      "name": "Dark Chocolate Velvet",
+      "category": "Non-Kopi",
+      "price": 24000,
+      "description": "Cokelat Belgia premium pekat kaya rasa disajikan hangat atau dingin dengan whipped cream.",
+      "photo_url": "https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 7,
+      "name": "Lychee Tea Cooler",
+      "category": "Non-Kopi",
+      "price": 20000,
+      "description": "Teh hitam melati wangi dengan sirup leci dan buah leci asli manis menyegarkan.",
+      "photo_url": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 8,
+      "name": "Lemonade Mint Sparkler",
+      "category": "Non-Kopi",
+      "price": 21000,
+      "description": "Perasan lemon segar, daun mint aromatik, dan soda sparkling dingin pelepas dahaga.",
+      "photo_url": "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 9,
+      "name": "Nasi Goreng Spesial Cafe",
+      "category": "Makanan",
+      "price": 32000,
+      "description": "Nasi goreng bumbu rempah istimewa dengan suwiran ayam, sosis, telur mata sapi, dan kerupuk.",
+      "photo_url": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 10,
+      "name": "Chicken Katsu Curry Rice",
+      "category": "Makanan",
+      "price": 36000,
+      "description": "Dada ayam krispi tebal dengan saus kari Jepang aromatik gurih di atas nasi pulen hangat.",
+      "photo_url": "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 11,
+      "name": "Spaghetti Creamy Carbonara",
+      "category": "Makanan",
+      "price": 35000,
+      "description": "Pasta spaghetti al dente berlumur saus krim telur, parmesan cheese, dan smoked beef gurih.",
+      "photo_url": "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 12,
+      "name": "Beef Burger & French Fries",
+      "category": "Makanan",
+      "price": 38000,
+      "description": "Patty daging sapi panggang juicy, keju cheddar leleh, selada segar, dan kentang goreng garing.",
+      "photo_url": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 13,
+      "name": "French Fries Truffle Herb",
+      "category": "Snack",
+      "price": 20000,
+      "description": "Kentang goreng renyah bumbu truffle oil, taburan rosemary, parsley, dan saus tartar.",
+      "photo_url": "https://images.unsplash.com/photo-1576107232684-1279f3908594?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 14,
+      "name": "Tahu Walik Krispi Sambal Kecap",
+      "category": "Snack",
+      "price": 18000,
+      "description": "Tahu goreng isi adonan ayam kenyal krispi disajikan dengan cocolan sambal kecap pedas gurih.",
+      "photo_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 15,
+      "name": "Dimsum Ayam Jamur (4 Pcs)",
+      "category": "Snack",
+      "price": 22000,
+      "description": "Dimsum siomay ayam jamur kukus lembut juicy dengan chili oil gurih pedas nampol.",
+      "photo_url": "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 16,
+      "name": "Cireng Krispi Bumbu Rujak",
+      "category": "Snack",
+      "price": 16000,
+      "description": "Cireng renyah di luar kenyal di dalam dengan saus gula merah rujak pedas manis asam segar.",
+      "photo_url": "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 17,
+      "name": "Croissant Butter Almond",
+      "category": "Dessert",
+      "price": 24000,
+      "description": "Pastry renyah berlapis harum mentega Prancis dengan filling krim almond dan taburan kacang.",
+      "photo_url": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    },
+    {
+      "item_id": 18,
+      "name": "Basque Burnt Cheesecake",
+      "category": "Dessert",
+      "price": 28000,
+      "description": "Cake keju panggang khas Spanyol dengan tekstur creamy lumer dan karamelisasi harum.",
+      "photo_url": "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=500&auto=format&fit=crop&q=60",
+      "stock_status": "tersedia"
+    }
+  ],
+  "sessions": [
+    {
+      "session_id": "d892a014-41d3-4927-94d3-0d58546b3f9a",
+      "table_id": 2,
+      "start_time": "2026-08-08T17:22:55.078Z",
+      "end_time": null,
+      "status": "aktif"
+    },
+    {
+      "session_id": "47b48fac-2ccc-4bc0-a951-e2144a3294db",
+      "table_id": 3,
+      "start_time": "2026-08-08T14:07:55.078Z",
+      "end_time": "2026-08-08T14:57:55.078Z",
+      "status": "ditutup"
+    },
+    {
+      "session_id": "d12b8808-248a-416f-bf65-829403b995f4",
+      "table_id": 5,
+      "start_time": "2026-08-08T12:07:55.079Z",
+      "end_time": "2026-08-08T12:57:55.079Z",
+      "status": "ditutup"
+    },
+    {
+      "session_id": "2ad0eb91-cc96-4d88-8ca1-3864e825ddd3",
+      "table_id": 1,
+      "start_time": "2026-08-07T18:07:55.079Z",
+      "end_time": "2026-08-07T18:57:55.079Z",
+      "status": "ditutup"
+    },
+    {
+      "session_id": "dad30aa9-1aef-4788-8840-72911efe9021",
+      "table_id": 4,
+      "start_time": "2026-08-06T18:07:55.079Z",
+      "end_time": "2026-08-06T18:57:55.079Z",
+      "status": "ditutup"
+    },
+    {
+      "session_id": "5c8eeb92-5492-4816-9e24-81b55b50e1ab",
+      "table_id": 1,
+      "start_time": "2026-08-08T19:10:21.369Z",
+      "end_time": null,
+      "status": "aktif"
+    },
+    {
+      "session_id": "014341fa-84fe-4ded-baad-99f9d3f3bfa8",
+      "table_id": 3,
+      "start_time": "2026-08-08T23:56:31.449Z",
+      "end_time": null,
+      "status": "aktif"
+    },
+    {
+      "session_id": "bbe985b5-9517-4792-adb2-0c6a96502b4c",
+      "table_id": 6,
+      "start_time": "2026-08-08T23:57:11.366Z",
+      "end_time": null,
+      "status": "aktif"
+    }
+  ],
+  "orders": [
+    {
+      "order_id": 1,
+      "session_id": "d892a014-41d3-4927-94d3-0d58546b3f9a",
+      "order_time": "2026-08-08T17:27:55.078Z",
+      "status": "diproses",
+      "channel": "self_order"
+    },
+    {
+      "order_id": 2,
+      "session_id": "47b48fac-2ccc-4bc0-a951-e2144a3294db",
+      "order_time": "2026-08-08T14:07:55.078Z",
+      "status": "selesai",
+      "channel": "self_order"
+    },
+    {
+      "order_id": 3,
+      "session_id": "d12b8808-248a-416f-bf65-829403b995f4",
+      "order_time": "2026-08-08T12:07:55.079Z",
+      "status": "selesai",
+      "channel": "pos_manual"
+    },
+    {
+      "order_id": 4,
+      "session_id": "2ad0eb91-cc96-4d88-8ca1-3864e825ddd3",
+      "order_time": "2026-08-07T18:07:55.079Z",
+      "status": "selesai",
+      "channel": "self_order"
+    },
+    {
+      "order_id": 5,
+      "session_id": "dad30aa9-1aef-4788-8840-72911efe9021",
+      "order_time": "2026-08-06T18:07:55.079Z",
+      "status": "selesai",
+      "channel": "self_order"
+    }
+  ],
+  "order_items": [
+    {
+      "order_item_id": 1,
+      "order_id": 1,
+      "item_id": 1,
+      "quantity": 2,
+      "notes": "Less ice, normal sugar",
+      "subtotal": 44000
+    },
+    {
+      "order_item_id": 2,
+      "order_id": 1,
+      "item_id": 9,
+      "quantity": 1,
+      "notes": "Pedas sedang, telur setengah matang",
+      "subtotal": 32000
+    },
+    {
+      "order_item_id": 3,
+      "order_id": 1,
+      "item_id": 13,
+      "quantity": 1,
+      "notes": "Saus dipisah",
+      "subtotal": 20000
+    },
+    {
+      "order_item_id": 4,
+      "order_id": 2,
+      "item_id": 1,
+      "quantity": 2,
+      "notes": "",
+      "subtotal": 44000
+    },
+    {
+      "order_item_id": 5,
+      "order_id": 2,
+      "item_id": 11,
+      "quantity": 1,
+      "notes": "Extra cheese",
+      "subtotal": 35000
+    },
+    {
+      "order_item_id": 14,
+      "order_id": 3,
+      "item_id": 2,
+      "quantity": 1,
+      "notes": "",
+      "subtotal": 28000
+    },
+    {
+      "order_item_id": 15,
+      "order_id": 3,
+      "item_id": 10,
+      "quantity": 2,
+      "notes": "",
+      "subtotal": 72000
+    },
+    {
+      "order_item_id": 16,
+      "order_id": 3,
+      "item_id": 17,
+      "quantity": 1,
+      "notes": "",
+      "subtotal": 24000
+    },
+    {
+      "order_item_id": 24,
+      "order_id": 4,
+      "item_id": 5,
+      "quantity": 2,
+      "notes": "Hot",
+      "subtotal": 52000
+    },
+    {
+      "order_item_id": 25,
+      "order_id": 4,
+      "item_id": 12,
+      "quantity": 1,
+      "notes": "No pickle",
+      "subtotal": 38000
+    },
+    {
+      "order_item_id": 26,
+      "order_id": 4,
+      "item_id": 15,
+      "quantity": 1,
+      "notes": "",
+      "subtotal": 22000
+    },
+    {
+      "order_item_id": 34,
+      "order_id": 5,
+      "item_id": 3,
+      "quantity": 2,
+      "notes": "Ice",
+      "subtotal": 36000
+    },
+    {
+      "order_item_id": 35,
+      "order_id": 5,
+      "item_id": 9,
+      "quantity": 2,
+      "notes": "",
+      "subtotal": 64000
+    }
+  ],
+  "payments": [
+    {
+      "payment_id": 1,
+      "session_id": "47b48fac-2ccc-4bc0-a951-e2144a3294db",
+      "payment_method": "QRIS",
+      "nominal": 91245,
+      "payment_time": "2026-08-08T14:57:55.078Z",
+      "kasir_id": 2,
+      "subtotal": 79000,
+      "service_charge": 3950,
+      "tax": 8295,
+      "total": 91245,
+      "cashier_name": "Siti Rahma",
+      "table_number": "Meja 03",
+      "change": 0
+    },
+    {
+      "payment_id": 2,
+      "session_id": "d12b8808-248a-416f-bf65-829403b995f4",
+      "payment_method": "tunai",
+      "nominal": 150000,
+      "payment_time": "2026-08-08T12:57:55.079Z",
+      "kasir_id": 2,
+      "subtotal": 124000,
+      "service_charge": 6200,
+      "tax": 13020,
+      "total": 143220,
+      "cashier_name": "Siti Rahma",
+      "table_number": "Meja 05",
+      "change": 6780
+    },
+    {
+      "payment_id": 3,
+      "session_id": "2ad0eb91-cc96-4d88-8ca1-3864e825ddd3",
+      "payment_method": "EDC",
+      "nominal": 129360,
+      "payment_time": "2026-08-07T18:57:55.079Z",
+      "kasir_id": 2,
+      "subtotal": 112000,
+      "service_charge": 5600,
+      "tax": 11760,
+      "total": 129360,
+      "cashier_name": "Siti Rahma",
+      "table_number": "Meja 01",
+      "change": 0
+    },
+    {
+      "payment_id": 4,
+      "session_id": "dad30aa9-1aef-4788-8840-72911efe9021",
+      "payment_method": "QRIS",
+      "nominal": 115500,
+      "payment_time": "2026-08-06T18:57:55.079Z",
+      "kasir_id": 2,
+      "subtotal": 100000,
+      "service_charge": 5000,
+      "tax": 10500,
+      "total": 115500,
+      "cashier_name": "Siti Rahma",
+      "table_number": "Meja 04",
+      "change": 0
+    }
+  ],
+  "stock_changes_log": [
+    {
+      "log_id": 1,
+      "item_id": 2,
+      "item_name": "Caramel Macchiato Ice",
+      "old_status": "habis",
+      "new_status": "tersedia",
+      "changed_by": 2,
+      "changed_by_name": "Siti Rahma",
+      "reason": "Restock sirup karamel baru dari supplier",
+      "changed_at": "2026-08-08T15:07:55.079Z"
+    },
+    {
+      "log_id": 2,
+      "item_id": 18,
+      "item_name": "Basque Burnt Cheesecake",
+      "old_status": "tersedia",
+      "new_status": "tersedia",
+      "changed_by": 1,
+      "changed_by_name": "Budi Santoso (Owner)",
+      "reason": "Pengecekan stok batch pagi",
+      "changed_at": "2026-08-08T13:07:55.079Z"
+    }
+  ],
+  "order_cancel_logs": [
+    {
+      "log_id": 1,
+      "order_id": 991,
+      "session_id": "sample-cancelled-session-1",
+      "table_number": "Meja 06",
+      "channel": "self_order",
+      "cancelled_by": 2,
+      "cancelled_by_name": "Siti Rahma (Kasir)",
+      "reason": "Customer terburu-buru ada panggilan mendadak sebelum makanan sempat dimasak.",
+      "reason_category": "Pelanggan Buru-Buru / Pergi",
+      "cancelled_at": "2026-08-08T16:07:55.079Z",
+      "total_amount": 54000,
+      "items_summary": "1x Spaghetti Creamy Carbonara, 1x Iced Lemon Mint Mocktail",
+      "items": [
+        {
+          "item_name": "Spaghetti Creamy Carbonara",
+          "quantity": 1,
+          "unit_price": 35000,
+          "subtotal": 35000,
+          "notes": "Extra creamy"
+        },
+        {
+          "item_name": "Iced Lemon Mint Mocktail",
+          "quantity": 1,
+          "unit_price": 19000,
+          "subtotal": 19000,
+          "notes": "Less ice"
+        }
+      ]
+    },
+    {
+      "log_id": 2,
+      "order_id": 992,
+      "session_id": "sample-cancelled-session-2",
+      "table_number": "Meja 08",
+      "channel": "pos_manual",
+      "cancelled_by": 3,
+      "cancelled_by_name": "Ahmad Fauzi (Kasir)",
+      "reason": "Salah klik varian menu saat input pesanan di POS tablet, diganti order baru.",
+      "reason_category": "Salah Input oleh Kasir",
+      "cancelled_at": "2026-08-08T14:07:55.079Z",
+      "total_amount": 38000,
+      "items_summary": "1x Beef Burger & French Fries",
+      "items": [
+        {
+          "item_name": "Beef Burger & French Fries",
+          "quantity": 1,
+          "unit_price": 38000,
+          "subtotal": 38000,
+          "notes": "Salah meja"
+        }
+      ]
+    }
+  ],
+  "tax_service_config": {
+    "config_id": 1,
+    "tax_percentage": 10,
+    "service_charge_percentage": 5,
+    "is_tax_active": true,
+    "is_service_active": true,
+    "effective_date": "2026-08-08T19:13:29.847Z",
+    "cafe_name": "CAFFE",
+    "tagline": "Sistem POS & Layanan Pemesanan Meja",
+    "address": "Jl. Utama No. 12, Pusat Kota",
+    "phone": "0812-3456-7890",
+    "email": "kontak@kaferesto.id",
+    "instagram": "",
+    "wifi_ssid": "",
+    "wifi_password": "",
+    "receipt_footer": "Terima kasih atas kunjungan Anda! Selamat menikmati hidangan.",
+    "logo_icon": "Coffee",
+    "operating_hours": "Setiap Hari (08:00 - 23:00 WIB)"
+  },
+  "nextIds": {
+    "user": 4,
+    "table": 13,
+    "menu_item": 19,
+    "order": 10,
+    "order_item": 25,
+    "payment": 6,
+    "stock_log": 3,
+    "cancel_log": 3
+  },
+  "cafe_profile": {
+    "cafe_name": "CAFFE",
+    "tagline": "Sistem POS & Layanan Pemesanan Meja",
+    "address": "Jl. Utama No. 12, Pusat Kota",
+    "phone": "0812-3456-7890",
+    "email": "kontak@kaferesto.id",
+    "instagram": "",
+    "wifi_ssid": "",
+    "wifi_password": "",
+    "receipt_footer": "Terima kasih atas kunjungan Anda! Selamat menikmati hidangan.",
+    "logo_icon": "Coffee",
+    "operating_hours": "Setiap Hari (08:00 - 23:00 WIB)",
+    "tax_percentage": 10,
+    "is_tax_active": true,
+    "service_charge_percentage": 5,
+    "is_service_active": true
+  }
+}
