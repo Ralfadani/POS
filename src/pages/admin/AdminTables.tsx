@@ -21,6 +21,7 @@ import {
   SlidersHorizontal,
   Coffee
 } from 'lucide-react';
+import { printElementById } from '../../utils/printUtils.js';
 import { POSOpenSessionModal } from '../pos/POSOpenSessionModal.js';
 import { POSTableAddModal } from '../pos/POSTableAddModal.js';
 
@@ -483,7 +484,7 @@ export const AdminTables: React.FC = () => {
               <Button
                 variant="primary"
                 size="sm"
-                onClick={() => window.print()}
+                onClick={() => printElementById('table-stand-printable', `Stand QR - ${qrStandTable.table_number}`)}
                 className="text-xs font-bold flex items-center gap-1.5 bg-[#1A3A5C] text-white"
               >
                 <Printer className="w-3.5 h-3.5" />

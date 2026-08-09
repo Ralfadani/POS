@@ -4,6 +4,7 @@ import { Modal } from '../../components/ui/Modal.js';
 import { Button } from '../../components/ui/Button.js';
 import { Table, Session } from '../../types/index.js';
 import { Printer, ExternalLink, Copy, Check } from 'lucide-react';
+import { printElementById } from '../../utils/printUtils.js';
 
 interface POSOpenSessionModalProps {
   isOpen: boolean;
@@ -40,76 +41,7 @@ export const POSOpenSessionModal: React.FC<POSOpenSessionModalProps> = ({
 
   const handlePrintQR = () => {
     if (!session || !table) return;
-
-    const printWin = window.open('', '_blank', 'width=400,height=550');
-    if (!printWin) {
-      alert('Pop-up printer diblokir browser. Harap izinkan pop-up.');
-      return;
-    }
-
-    const svgElement = document.getElementById('table-qr-svg')?.outerHTML || '';
-
-    printWin.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>QR Menu - ${table.table_number}</title>
-          <style>
-            @page { size: 80mm 100mm; margin: 0; }
-            body {
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-              text-align: center;
-              padding: 20px;
-              color: #1A3A5C;
-            }
-            .title { font-size: 20px; font-weight: 800; margin-bottom: 2px; }
-            .subtitle { font-size: 11px; color: #64748b; margin-bottom: 16px; }
-            .table-badge {
-              display: inline-block;
-              background: #1A3A5C;
-              color: white;
-              font-size: 16px;
-              font-weight: bold;
-              padding: 6px 16px;
-              border-radius: 8px;
-              margin-bottom: 16px;
-            }
-            .qr-box {
-              background: white;
-              padding: 12px;
-              display: inline-block;
-              border: 2px solid #e2e8f0;
-              border-radius: 12px;
-            }
-            .instructions { font-size: 12px; font-weight: 600; margin-top: 14px; color: #334155; }
-            .subtext { font-size: 10px; color: #94a3b8; margin-top: 4px; }
-            @media print {
-              .no-print { display: none; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="title">BREW & BYTE CAFE</div>
-          <div class="subtitle">Self-Ordering QR Table Stand</div>
-          <div class="table-badge">${table.table_number}</div>
-          <br>
-          <div class="qr-box">
-            ${svgElement}
-          </div>
-          <div class="instructions">Scan QR untuk Melihat Menu & Memesan Langsung</div>
-          <div class="subtext">Pesanan akan langsung diteruskan ke Bar & Dapur</div>
-          <div class="no-print" style="margin-top: 24px;">
-            <button onclick="window.print()" style="padding: 8px 16px; background: #1A3A5C; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-              Cetak QR Meja
-            </button>
-          </div>
-          <script>
-            setTimeout(() => { window.print(); }, 350);
-          </script>
-        </body>
-      </html>
-    `);
-    printWin.document.close();
+    printElementById('table-qr-svg', `QR Menu - ${table.table_number}`);
   };
 
   return (
