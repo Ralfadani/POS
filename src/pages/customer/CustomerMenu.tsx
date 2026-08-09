@@ -457,7 +457,7 @@ export const CustomerMenu: React.FC = () => {
       {orderSuccessMsg && (
         <div className="m-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded-xl flex items-center space-x-2 animate-in fade-in">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>Pesanan Anda berhasil dikirim ke Barista & Dapur!</span>
+          <span>Pesanan Anda berhasil dikirim!</span>
         </div>
       )}
 
@@ -669,7 +669,7 @@ export const CustomerMenu: React.FC = () => {
                 disabled={submittingOrder || cartItemsList.length === 0}
                 onClick={handleSubmitOrder}
               >
-                {submittingOrder ? 'Mengirim ke Dapur...' : 'Kirim Pesanan ke Dapur'}
+                {submittingOrder ? 'Mengirim...' : 'Kirim Pesanan '}
               </Button>
               <p className="text-[11px] text-center text-slate-400 mt-2">
                 Pembayaran dilakukan di Kasir saat selesai bersantap.
@@ -720,7 +720,7 @@ export const CustomerMenu: React.FC = () => {
                         }
                         size="sm"
                       >
-                        {order.status === 'menunggu' && 'Menunggu Dapur'}
+                        {order.status === 'menunggu' && 'Menunggu'}
                         {order.status === 'diproses' && 'Sedang Diproses'}
                         {order.status === 'selesai' && 'Selesai Diantar'}
                         {order.status === 'dibatalkan' && 'Dibatalkan'}
