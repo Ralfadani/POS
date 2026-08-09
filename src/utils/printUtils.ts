@@ -20,8 +20,10 @@ export const printElementById = (elementId: string, title: string = 'Cetak') => 
   iframe.style.position = 'fixed';
   iframe.style.right = '0';
   iframe.style.bottom = '0';
-  iframe.style.width = '0';
-  iframe.style.height = '0';
+  iframe.style.width = '1px';
+  iframe.style.height = '1px';
+  iframe.style.opacity = '0';
+  iframe.style.pointerEvents = 'none';
   iframe.style.border = '0';
   document.body.appendChild(iframe);
 
@@ -84,9 +86,18 @@ export const printElementById = (elementId: string, title: string = 'Cetak') => 
           ${element.innerHTML}
         </div>
         <script>
-          setTimeout(() => {
-            window.print();
-          }, 500);
+          // Wait for all images to load before printing
+          Promise.all(Array.from(document.images).map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            });
+          })).then(() => {
+            setTimeout(() => {
+              window.print();
+            }, 300);
+          });
         </script>
       </body>
     </html>
