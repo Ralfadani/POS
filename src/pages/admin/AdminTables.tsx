@@ -492,27 +492,45 @@ export const AdminTables: React.FC = () => {
                   const area = qrStandTable.area || 'Area Indoor';
                   const html = `<!DOCTYPE html>
 <html><head><title>Stand QR - ${tableNum}</title>
+<meta charset="UTF-8">
 <style>
-  @page { size: 80mm auto; margin: 5mm; }
+  @page { size: 80mm auto; margin: 0; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, Helvetica, sans-serif; text-align: center; background: white; color: #1A3A5C; padding: 16px; }
-  .badge { display: inline-block; padding: 3px 12px; background: #fef3c7; color: #78350f; border-radius: 99px; font-size: 8pt; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; }
-  h2 { font-size: 20pt; font-weight: 900; margin: 4px 0; }
-  p { font-size: 8pt; color: #64748b; margin-bottom: 12px; }
-  .qr-box { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 12px; display: inline-block; margin-bottom: 12px; }
-  img { width: 160px; height: 160px; display: block; }
-  .footer-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; font-size: 9pt; }
-  .footer-box strong { display: block; font-size: 10pt; }
+  body { font-family: 'Courier New', Courier, monospace; background: white; color: #000; width: 100%; max-width: 302px; margin: 0 auto; padding: 10px 8px 20px; font-size: 11pt; }
+  .center { text-align: center; }
+  .bold { font-weight: bold; }
+  .divider-solid { border-top: 2px solid #000; margin: 6px 0; }
+  .divider { border-top: 1px dashed #000; margin: 6px 0; }
+  .cafe-name { font-size: 14pt; font-weight: 900; letter-spacing: 1px; }
+  .section-label { font-size: 10pt; font-weight: bold; background: #000; color: #fff; text-align: center; padding: 4px 0; letter-spacing: 2px; margin: 6px 0; }
+  .table-number { font-size: 22pt; font-weight: 900; letter-spacing: 2px; text-align: center; margin: 4px 0; }
+  .qr-wrap { text-align: center; margin: 8px 0; }
+  .qr-wrap img { width: 180px; height: 180px; display: inline-block; }
+  .footer { font-size: 9pt; text-align: center; margin-top: 8px; color: #333; line-height: 1.6; }
+  .footer strong { font-size: 10pt; }
 </style></head>
 <body>
-  <div class="badge">${area}</div>
-  <h2>${tableNum}</h2>
-  <p>Scan QR untuk pesan menu dari smartphone Anda</p>
-  <div class="qr-box"><img src="${qrSrc}" alt="QR ${tableNum}"></div>
-  <div class="footer-box"><strong>BREW &amp; BYTE CAFE</strong>Self-Order Tanpa Antri di Kasir</div>
+  <div class="center">
+    <div class="cafe-name">BREW &amp; BYTE CAFE</div>
+    <div style="font-size: 9pt; margin-top: 2px;">${area}</div>
+  </div>
+  <div class="divider-solid"></div>
+  <div class="section-label">*** QR STAND MEJA ***</div>
+  <div class="center bold" style="font-size:10pt; margin: 4px 0 2px;">NOMOR MEJA</div>
+  <div class="table-number">${tableNum}</div>
+  <div class="divider"></div>
+  <div class="center" style="font-size: 9pt; margin-bottom: 4px;">Scan QR di bawah untuk memesan mandiri</div>
+  <div class="qr-wrap"><img src="${qrSrc}" alt="QR ${tableNum}"></div>
+  <div class="divider"></div>
+  <div class="footer">
+    <strong>Silakan scan QR untuk melihat menu</strong><br>
+    &amp; memesan langsung dari smartphone Anda.<br>
+    Pesanan otomatis masuk ke Dapur &amp; Bar.
+  </div>
+  <div class="divider"></div>
+  <div class="center" style="font-size: 8pt; color: #888; margin-top: 4px;">--- Struk QR Meja Pelanggan ---</div>
   <script>
     window.onload = function() {
-      // Tunggu gambar QR benar-benar selesai dimuat
       var img = document.querySelector('img');
       function doPrint() { setTimeout(function(){ window.print(); }, 200); }
       if (img && img.complete) { doPrint(); }

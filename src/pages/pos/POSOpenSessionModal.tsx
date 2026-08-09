@@ -54,98 +54,157 @@ export const POSOpenSessionModal: React.FC<POSOpenSessionModalProps> = ({
     const svgString = serializer.serializeToString(svgEl);
     const svgDataUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
 
-    const cafeName = 'BREW & BYTE CAFE';
+    // Fetch cafe name & info from the server for the receipt header
+    const getCafeInfo = async () => {
+      try {
+        const res = await fetch('/api/cafe-profile');
+        const data = await res.json();
+        if (data.success && data.profile) return data.profile;
+      } catch (_) {}
+      return { cafe_name: 'BREW & BYTE CAFE', cafe_address: '', cafe_phone: '' };
+    };
 
-    const html = `<!DOCTYPE html>
+    getCafeInfo().then((profile) => {
+      const cafeName = profile.cafe_name || 'BREW & BYTE CAFE';
+      const cafeAddress = profile.cafe_address || '';
+      const cafePhone = profile.cafe_phone || '';
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+      const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+      const html = `<!DOCTYPE html>
 <html>
 <head>
   <title>QR Meja - ${table.table_number}</title>
+  <meta charset="UTF-8">
   <style>
-    @page { size: 80mm auto; margin: 5mm; }
+    @page { size: 80mm auto; margin: 0; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: Arial, Helvetica, sans-serif;
-      text-align: center;
+      font-family: 'Courier New', Courier, monospace;
       background: white;
-      color: #1A3A5C;
-      padding: 16px;
+      color: #000;
+      width: 100%;
+      max-width: 302px;
+      margin: 0 auto;
+      padding: 10px 8px 20px;
+      font-size: 11pt;
     }
-    .card {
-      border: 2px dashed #c7d2e6;
-      border-radius: 12px;
-      padding: 20px 16px;
-      display: inline-block;
-      max-width: 240px;
-    }
-    .cafe-name {
-      font-size: 14pt;
-      font-weight: 900;
-      letter-spacing: 0.5px;
-      margin-bottom: 2px;
-    }
-    .subtitle {
-      font-size: 8pt;
-      color: #64748b;
-      margin-bottom: 12px;
-    }
-    .table-badge {
-      display: inline-block;
-      background: #1A3A5C;
-      color: white;
-      font-size: 13pt;
+    .center { text-align: center; }
+    .bold { font-weight: bold; }
+    .divider-solid { border-top: 2px solid #000; margin: 6px 0; }
+    .divider { border-top: 1px dashed #000; margin: 6px 0; }
+    .cafe-name { font-size: 14pt; font-weight: 900; letter-spacing: 1px; }
+    .cafe-sub { font-size: 9pt; color: #444; margin-top: 1px; }
+    .section-label {
+      font-size: 10pt;
       font-weight: bold;
-      padding: 5px 18px;
-      border-radius: 8px;
-      margin-bottom: 14px;
+      background: #000;
+      color: #fff;
+      text-align: center;
+      padding: 4px 0;
+      letter-spacing: 2px;
+      margin: 6px 0;
     }
-    .qr-img {
+    .table-number {
+      font-size: 22pt;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-align: center;
+      margin: 4px 0;
+    }
+    .qr-wrap {
+      text-align: center;
+      margin: 8px 0;
+    }
+    .qr-wrap img {
       width: 180px;
       height: 180px;
-      display: block;
-      margin: 0 auto 10px;
+      display: inline-block;
     }
-    .instruction {
-      font-size: 9pt;
-      font-weight: 700;
-      color: #334155;
+    .row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10pt;
+      margin-bottom: 3px;
     }
-    .subtext {
+    .footer { font-size: 9pt; text-align: center; margin-top: 8px; color: #333; line-height: 1.6; }
+    .footer strong { font-size: 10pt; }
+    .url-box {
       font-size: 8pt;
-      color: #94a3b8;
-      margin-top: 3px;
+      border: 1px dashed #aaa;
+      padding: 4px 6px;
+      margin: 6px 0;
+      word-break: break-all;
+      text-align: center;
+      color: #334155;
     }
   </style>
 </head>
 <body>
-  <div class="card">
+  <div class="center">
     <div class="cafe-name">${cafeName}</div>
-    <div class="subtitle">Self-Ordering QR Table Stand</div>
-    <div class="table-badge">${table.table_number}</div>
-    <br>
-    <img class="qr-img" src="${svgDataUrl}" alt="QR Code ${table.table_number}">
-    <div class="instruction">Scan untuk Memesan Langsung</div>
-    <div class="subtext">Pesanan langsung ke Dapur & Bar</div>
+    ${cafeAddress ? `<div class="cafe-sub">${cafeAddress}</div>` : ''}
+    ${cafePhone ? `<div class="cafe-sub">Telp: ${cafePhone}</div>` : ''}
   </div>
+
+  <div class="divider-solid"></div>
+
+  <div class="section-label">*** QR MENU MEJA ***</div>
+
+  <div class="row"><span>Tanggal:</span><span>${dateStr}</span></div>
+  <div class="row"><span>Waktu:</span><span>${timeStr}</span></div>
+  <div class="row"><span>Sesi ID:</span><span>#${session?.session_id ?? '-'}</span></div>
+
+  <div class="divider-solid"></div>
+
+  <div class="center bold" style="font-size:10pt; margin: 4px 0 2px;">NOMOR MEJA</div>
+  <div class="table-number">${table.table_number}</div>
+
+  <div class="divider"></div>
+
+  <div class="center" style="font-size: 9pt; margin-bottom: 4px;">
+    Scan QR di bawah untuk memesan mandiri
+  </div>
+
+  <div class="qr-wrap">
+    <img src="${svgDataUrl}" alt="QR Code ${table.table_number}">
+  </div>
+
+  <div class="url-box">${menuUrl}</div>
+
+  <div class="divider"></div>
+
+  <div class="footer">
+    <strong>Silakan scan QR untuk melihat menu</strong><br>
+    &amp; memesan langsung dari smartphone Anda.<br>
+    Pesanan otomatis masuk ke Dapur &amp; Bar.
+  </div>
+
+  <div class="divider"></div>
+  <div class="center" style="font-size: 8pt; color: #888; margin-top: 4px;">
+    --- Struk QR Meja Pelanggan ---
+  </div>
+
   <script>
     window.onload = function() {
-      setTimeout(function() { window.print(); }, 200);
+      setTimeout(function() { window.print(); }, 300);
     };
   </script>
 </body>
 </html>`;
 
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const printWin = window.open(url, '_blank');
-    if (!printWin) {
-      // Fallback jika popup diblokir: download file HTML
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `QR-${table.table_number}.html`;
-      a.click();
-    }
-    // Revoke blob URL setelah jeda aman
-    setTimeout(() => URL.revokeObjectURL(url), 30000);
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const printWin = window.open(url, '_blank');
+      if (!printWin) {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `QR-${table.table_number}.html`;
+        a.click();
+      }
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+    });
   };
 
   return (
