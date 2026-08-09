@@ -21,7 +21,7 @@ import {
   SlidersHorizontal,
   Coffee
 } from 'lucide-react';
-
+import { printHtmlDirectly } from '../../utils/printUtils.js';
 import { POSOpenSessionModal } from '../pos/POSOpenSessionModal.js';
 import { POSTableAddModal } from '../pos/POSTableAddModal.js';
 
@@ -490,26 +490,7 @@ export const AdminTables: React.FC = () => {
                   const qrSrc = imgEl?.src || '';
                   const tableNum = qrStandTable.table_number;
                   const area = qrStandTable.area || 'Area Indoor';
-                  const html = `<!DOCTYPE html>
-<html><head><title>Stand QR - ${tableNum}</title>
-<meta charset="UTF-8">
-<style>
-  @page { size: 80mm auto; margin: 0; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Courier New', Courier, monospace; background: white; color: #000; width: 100%; max-width: 302px; margin: 0 auto; padding: 10px 8px 20px; font-size: 11pt; }
-  .center { text-align: center; }
-  .bold { font-weight: bold; }
-  .divider-solid { border-top: 2px solid #000; margin: 6px 0; }
-  .divider { border-top: 1px dashed #000; margin: 6px 0; }
-  .cafe-name { font-size: 14pt; font-weight: 900; letter-spacing: 1px; }
-  .section-label { font-size: 10pt; font-weight: bold; background: #000; color: #fff; text-align: center; padding: 4px 0; letter-spacing: 2px; margin: 6px 0; }
-  .table-number { font-size: 22pt; font-weight: 900; letter-spacing: 2px; text-align: center; margin: 4px 0; }
-  .qr-wrap { text-align: center; margin: 8px 0; }
-  .qr-wrap img { width: 180px; height: 180px; display: inline-block; }
-  .footer { font-size: 9pt; text-align: center; margin-top: 8px; color: #333; line-height: 1.6; }
-  .footer strong { font-size: 10pt; }
-</style></head>
-<body>
+                  const html = `
   <div class="center">
     <div class="cafe-name">BREW &amp; BYTE CAFE</div>
     <div style="font-size: 9pt; margin-top: 2px;">${area}</div>
@@ -529,21 +510,8 @@ export const AdminTables: React.FC = () => {
   </div>
   <div class="divider"></div>
   <div class="center" style="font-size: 8pt; color: #888; margin-top: 4px;">--- Struk QR Meja Pelanggan ---</div>
-  <script>
-    window.onload = function() {
-      var img = document.querySelector('img');
-      function doPrint() { setTimeout(function(){ window.print(); }, 200); }
-      if (img && img.complete) { doPrint(); }
-      else if (img) { img.onload = doPrint; img.onerror = doPrint; }
-      else { doPrint(); }
-    };
-  </script>
-</body></html>`;
-                  const blob = new Blob([html], { type: 'text/html' });
-                  const url = URL.createObjectURL(blob);
-                  const w = window.open(url, '_blank');
-                  if (!w) { const a = document.createElement('a'); a.href = url; a.download = `QR-${tableNum}.html`; a.click(); }
-                  setTimeout(() => URL.revokeObjectURL(url), 30000);
+`;
+                  printHtmlDirectly(html);
                 }}
                 className="text-xs font-bold flex items-center gap-1.5 bg-[#1A3A5C] text-white"
               >

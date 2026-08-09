@@ -113,3 +113,60 @@ export const printElementById = (elementId: string, title: string = 'Cetak') => 
     if (iframeToRemove) iframeToRemove.remove();
   }, 10000); 
 };
+
+/**
+ * Prints HTML content directly from the main window using a temporary DOM injection.
+ * This is the most reliable method for PWA and Android Print Services (e.g. RawBT),
+ * as it avoids popup blockers, Blob URL cross-origin issues, and iframe freezes.
+ */
+export const printHtmlDirectly = (htmlContent: string) => {
+  // Cleanup any existing print containers
+  const existingContainer = document.getElementById('global-print-container');
+  if (existingContainer) existingContainer.remove();
+  const existingStyle = document.getElementById('global-print-style');
+  if (existingStyle) existingStyle.remove();
+
+  // Create temporary container
+  const container = document.createElement('div');
+  container.id = 'global-print-container';
+  container.innerHTML = htmlContent;
+  
+  // Create print-specific styles to hide everything else
+  const style = document.createElement('style');
+  style.id = 'global-print-style';
+  style.innerHTML = `
+    @media screen {
+      #global-print-container { display: none !important; }
+    }
+    @media print {
+      body > *:not(#global-print-container) { display: none !important; }
+      #global-print-container { 
+        display: block !important; 
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        margin: 0;
+        padding: 0;
+      }
+      /* Remove default header/footer from browsers if possible */
+      @page { margin: 0; }
+    }
+  `;
+  
+  document.head.appendChild(style);
+  document.body.appendChild(container);
+  
+  // Wait for React/DOM to render and any embedded images to load
+  setTimeout(() => {
+    window.print();
+    // Cleanup after print dialog is closed
+    setTimeout(() => {
+      const containerToRemove = document.getElementById('global-print-container');
+      if (containerToRemove) containerToRemove.remove();
+      const styleToRemove = document.getElementById('global-print-style');
+      if (styleToRemove) styleToRemove.remove();
+    }, 2000);
+  }, 500);
+};

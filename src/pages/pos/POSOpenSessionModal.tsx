@@ -4,6 +4,7 @@ import { Modal } from '../../components/ui/Modal.js';
 import { Button } from '../../components/ui/Button.js';
 import { Table, Session } from '../../types/index.js';
 import { Printer, ExternalLink, Copy, Check } from 'lucide-react';
+import { printHtmlDirectly } from '../../utils/printUtils.js';
 
 interface POSOpenSessionModalProps {
   isOpen: boolean;
@@ -72,76 +73,7 @@ export const POSOpenSessionModal: React.FC<POSOpenSessionModalProps> = ({
       const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
       const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
-      const html = `<!DOCTYPE html>
-<html>
-<head>
-  <title>QR Meja - ${table.table_number}</title>
-  <meta charset="UTF-8">
-  <style>
-    @page { size: 80mm auto; margin: 0; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Courier New', Courier, monospace;
-      background: white;
-      color: #000;
-      width: 100%;
-      max-width: 302px;
-      margin: 0 auto;
-      padding: 10px 8px 20px;
-      font-size: 11pt;
-    }
-    .center { text-align: center; }
-    .bold { font-weight: bold; }
-    .divider-solid { border-top: 2px solid #000; margin: 6px 0; }
-    .divider { border-top: 1px dashed #000; margin: 6px 0; }
-    .cafe-name { font-size: 14pt; font-weight: 900; letter-spacing: 1px; }
-    .cafe-sub { font-size: 9pt; color: #444; margin-top: 1px; }
-    .section-label {
-      font-size: 10pt;
-      font-weight: bold;
-      background: #000;
-      color: #fff;
-      text-align: center;
-      padding: 4px 0;
-      letter-spacing: 2px;
-      margin: 6px 0;
-    }
-    .table-number {
-      font-size: 22pt;
-      font-weight: 900;
-      letter-spacing: 2px;
-      text-align: center;
-      margin: 4px 0;
-    }
-    .qr-wrap {
-      text-align: center;
-      margin: 8px 0;
-    }
-    .qr-wrap img {
-      width: 180px;
-      height: 180px;
-      display: inline-block;
-    }
-    .row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 10pt;
-      margin-bottom: 3px;
-    }
-    .footer { font-size: 9pt; text-align: center; margin-top: 8px; color: #333; line-height: 1.6; }
-    .footer strong { font-size: 10pt; }
-    .url-box {
-      font-size: 8pt;
-      border: 1px dashed #aaa;
-      padding: 4px 6px;
-      margin: 6px 0;
-      word-break: break-all;
-      text-align: center;
-      color: #334155;
-    }
-  </style>
-</head>
-<body>
+      const html = `
   <div class="center">
     <div class="cafe-name">${cafeName}</div>
     ${cafeAddress ? `<div class="cafe-sub">${cafeAddress}</div>` : ''}
@@ -185,25 +117,9 @@ export const POSOpenSessionModal: React.FC<POSOpenSessionModalProps> = ({
   <div class="center" style="font-size: 8pt; color: #888; margin-top: 4px;">
     --- Struk QR Meja Pelanggan ---
   </div>
+`;
 
-  <script>
-    window.onload = function() {
-      setTimeout(function() { window.print(); }, 300);
-    };
-  </script>
-</body>
-</html>`;
-
-      const blob = new Blob([html], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const printWin = window.open(url, '_blank');
-      if (!printWin) {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `QR-${table.table_number}.html`;
-        a.click();
-      }
-      setTimeout(() => URL.revokeObjectURL(url), 30000);
+      printHtmlDirectly(html);
     });
   };
 
