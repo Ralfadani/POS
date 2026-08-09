@@ -4,7 +4,6 @@ import { Modal } from '../../components/ui/Modal.js';
 import { Button } from '../../components/ui/Button.js';
 import { Table, Session } from '../../types/index.js';
 import { Printer, ExternalLink, Copy, Check } from 'lucide-react';
-import { printElementById } from '../../utils/printUtils.js';
 
 interface POSOpenSessionModalProps {
   isOpen: boolean;
@@ -41,7 +40,112 @@ export const POSOpenSessionModal: React.FC<POSOpenSessionModalProps> = ({
 
   const handlePrintQR = () => {
     if (!session || !table) return;
-    printElementById('table-qr-svg', `QR Menu - ${table.table_number}`);
+
+    // Ambil elemen SVG langsung dari DOM (hasil render React)
+    const container = document.getElementById('table-qr-svg');
+    const svgEl = container?.querySelector('svg');
+    if (!svgEl) {
+      alert('QR Code belum siap. Tunggu sebentar lalu coba lagi.');
+      return;
+    }
+
+    // Serialize SVG ke string, lalu encode sebagai Data URL
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(svgEl);
+    const svgDataUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
+
+    const cafeName = 'BREW & BYTE CAFE';
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <title>QR Meja - ${table.table_number}</title>
+  <style>
+    @page { size: 80mm auto; margin: 5mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      text-align: center;
+      background: white;
+      color: #1A3A5C;
+      padding: 16px;
+    }
+    .card {
+      border: 2px dashed #c7d2e6;
+      border-radius: 12px;
+      padding: 20px 16px;
+      display: inline-block;
+      max-width: 240px;
+    }
+    .cafe-name {
+      font-size: 14pt;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+    .subtitle {
+      font-size: 8pt;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+    .table-badge {
+      display: inline-block;
+      background: #1A3A5C;
+      color: white;
+      font-size: 13pt;
+      font-weight: bold;
+      padding: 5px 18px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+    }
+    .qr-img {
+      width: 180px;
+      height: 180px;
+      display: block;
+      margin: 0 auto 10px;
+    }
+    .instruction {
+      font-size: 9pt;
+      font-weight: 700;
+      color: #334155;
+    }
+    .subtext {
+      font-size: 8pt;
+      color: #94a3b8;
+      margin-top: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="cafe-name">${cafeName}</div>
+    <div class="subtitle">Self-Ordering QR Table Stand</div>
+    <div class="table-badge">${table.table_number}</div>
+    <br>
+    <img class="qr-img" src="${svgDataUrl}" alt="QR Code ${table.table_number}">
+    <div class="instruction">Scan untuk Memesan Langsung</div>
+    <div class="subtext">Pesanan langsung ke Dapur & Bar</div>
+  </div>
+  <script>
+    window.onload = function() {
+      setTimeout(function() { window.print(); }, 200);
+    };
+  </script>
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const printWin = window.open(url, '_blank');
+    if (!printWin) {
+      // Fallback jika popup diblokir: download file HTML
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `QR-${table.table_number}.html`;
+      a.click();
+    }
+    // Revoke blob URL setelah jeda aman
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
   };
 
   return (

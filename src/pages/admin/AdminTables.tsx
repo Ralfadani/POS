@@ -21,7 +21,7 @@ import {
   SlidersHorizontal,
   Coffee
 } from 'lucide-react';
-import { printElementById } from '../../utils/printUtils.js';
+
 import { POSOpenSessionModal } from '../pos/POSOpenSessionModal.js';
 import { POSTableAddModal } from '../pos/POSTableAddModal.js';
 
@@ -484,7 +484,49 @@ export const AdminTables: React.FC = () => {
               <Button
                 variant="primary"
                 size="sm"
-                onClick={() => printElementById('table-stand-printable', `Stand QR - ${qrStandTable.table_number}`)}
+                onClick={() => {
+                  // Ambil URL gambar QR dari img element
+                  const imgEl = document.querySelector('#table-stand-printable img') as HTMLImageElement | null;
+                  const qrSrc = imgEl?.src || '';
+                  const tableNum = qrStandTable.table_number;
+                  const area = qrStandTable.area || 'Area Indoor';
+                  const html = `<!DOCTYPE html>
+<html><head><title>Stand QR - ${tableNum}</title>
+<style>
+  @page { size: 80mm auto; margin: 5mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, Helvetica, sans-serif; text-align: center; background: white; color: #1A3A5C; padding: 16px; }
+  .badge { display: inline-block; padding: 3px 12px; background: #fef3c7; color: #78350f; border-radius: 99px; font-size: 8pt; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; }
+  h2 { font-size: 20pt; font-weight: 900; margin: 4px 0; }
+  p { font-size: 8pt; color: #64748b; margin-bottom: 12px; }
+  .qr-box { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 12px; display: inline-block; margin-bottom: 12px; }
+  img { width: 160px; height: 160px; display: block; }
+  .footer-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; font-size: 9pt; }
+  .footer-box strong { display: block; font-size: 10pt; }
+</style></head>
+<body>
+  <div class="badge">${area}</div>
+  <h2>${tableNum}</h2>
+  <p>Scan QR untuk pesan menu dari smartphone Anda</p>
+  <div class="qr-box"><img src="${qrSrc}" alt="QR ${tableNum}"></div>
+  <div class="footer-box"><strong>BREW &amp; BYTE CAFE</strong>Self-Order Tanpa Antri di Kasir</div>
+  <script>
+    window.onload = function() {
+      // Tunggu gambar QR benar-benar selesai dimuat
+      var img = document.querySelector('img');
+      function doPrint() { setTimeout(function(){ window.print(); }, 200); }
+      if (img && img.complete) { doPrint(); }
+      else if (img) { img.onload = doPrint; img.onerror = doPrint; }
+      else { doPrint(); }
+    };
+  </script>
+</body></html>`;
+                  const blob = new Blob([html], { type: 'text/html' });
+                  const url = URL.createObjectURL(blob);
+                  const w = window.open(url, '_blank');
+                  if (!w) { const a = document.createElement('a'); a.href = url; a.download = `QR-${tableNum}.html`; a.click(); }
+                  setTimeout(() => URL.revokeObjectURL(url), 30000);
+                }}
                 className="text-xs font-bold flex items-center gap-1.5 bg-[#1A3A5C] text-white"
               >
                 <Printer className="w-3.5 h-3.5" />
