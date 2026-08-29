@@ -145,9 +145,10 @@ export const POSTransactions: React.FC = () => {
 
     // Method match
     if (methodFilter !== 'all') {
-      if (methodFilter === 'tunai' && t.payment_method !== 'tunai') return false;
-      if (methodFilter === 'qris' && t.payment_method !== 'qris') return false;
-      if (methodFilter === 'kartu' && t.payment_method !== 'kartu_debit' && t.payment_method !== 'kartu_kredit' && t.payment_method !== 'kartu') return false;
+      const mLower = (t.payment_method || '').toLowerCase();
+      if (methodFilter === 'tunai' && mLower !== 'tunai') return false;
+      if (methodFilter === 'qris' && mLower !== 'qris') return false;
+      if (methodFilter === 'kartu' && mLower !== 'edc' && !mLower.includes('kartu')) return false;
     }
 
     // Date match
@@ -165,9 +166,12 @@ export const POSTransactions: React.FC = () => {
   // Calculate stats for current filter
   const totalRevenue = filteredTransactions.reduce((sum, t) => sum + (Number(t.total) || 0), 0);
   const totalCount = filteredTransactions.length;
-  const cashTotal = filteredTransactions.filter(t => t.payment_method === 'tunai').reduce((sum, t) => sum + (Number(t.total) || 0), 0);
-  const qrisTotal = filteredTransactions.filter(t => t.payment_method === 'qris').reduce((sum, t) => sum + (Number(t.total) || 0), 0);
-  const cardTotal = filteredTransactions.filter(t => t.payment_method.includes('kartu')).reduce((sum, t) => sum + (Number(t.total) || 0), 0);
+  const cashTotal = filteredTransactions.filter(t => (t.payment_method || '').toLowerCase() === 'tunai').reduce((sum, t) => sum + (Number(t.total) || 0), 0);
+  const qrisTotal = filteredTransactions.filter(t => (t.payment_method || '').toLowerCase() === 'qris').reduce((sum, t) => sum + (Number(t.total) || 0), 0);
+  const cardTotal = filteredTransactions.filter(t => {
+    const m = (t.payment_method || '').toLowerCase();
+    return m === 'edc' || m.includes('kartu');
+  }).reduce((sum, t) => sum + (Number(t.total) || 0), 0);
 
   return (
     <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-5 overflow-y-auto shadow-xs flex flex-col space-y-4 sm:space-y-5">
@@ -229,7 +233,7 @@ export const POSTransactions: React.FC = () => {
               {formatRupiah(cashTotal)}
             </div>
             <div className="text-[10px] text-slate-400 mt-0.5">
-              {filteredTransactions.filter(t => t.payment_method === 'tunai').length} transaksi
+              {filteredTransactions.filter(t => (t.payment_method || '').toLowerCase() === 'tunai').length} transaksi
             </div>
           </div>
         </div>
@@ -244,7 +248,7 @@ export const POSTransactions: React.FC = () => {
               {formatRupiah(qrisTotal)}
             </div>
             <div className="text-[10px] text-slate-400 mt-0.5">
-              {filteredTransactions.filter(t => t.payment_method === 'qris').length} transaksi
+              {filteredTransactions.filter(t => (t.payment_method || '').toLowerCase() === 'qris').length} transaksi
             </div>
           </div>
         </div>
@@ -259,7 +263,10 @@ export const POSTransactions: React.FC = () => {
               {formatRupiah(cardTotal)}
             </div>
             <div className="text-[10px] text-slate-400 mt-0.5">
-              {filteredTransactions.filter(t => t.payment_method.includes('kartu')).length} transaksi
+              {filteredTransactions.filter(t => {
+                const m = (t.payment_method || '').toLowerCase();
+                return m === 'edc' || m.includes('kartu');
+              }).length} transaksi
             </div>
           </div>
         </div>
@@ -379,10 +386,10 @@ export const POSTransactions: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white">
                 {filteredTransactions.map(trx => {
-                  const method = trx.payment_method || 'tunai';
+                  const method = (trx.payment_method || 'tunai').toLowerCase();
                   const isCash = method === 'tunai';
                   const isQris = method === 'qris';
-                  const isCard = method.includes('kartu');
+                  const isCard = method === 'edc' || method.includes('kartu');
 
                   return (
                     <tr key={trx.payment_id} className="hover:bg-sky-50/40 transition-colors">

@@ -49,7 +49,13 @@ export function updateMenuItem(req: AuthRequest, res: Response) {
     const updates: any = {};
     if (name) updates.name = name.trim();
     if (category) updates.category = category.trim();
-    if (price !== undefined) updates.price = Number(price);
+    if (price !== undefined) {
+      const numPrice = Number(price);
+      if (isNaN(numPrice) || numPrice < 0) {
+        return res.status(400).json({ error: 'Harga harus berupa angka positif' });
+      }
+      updates.price = numPrice;
+    }
     if (description !== undefined) updates.description = description;
     if (photo_url !== undefined) updates.photo_url = photo_url;
     if (stock_status !== undefined) updates.stock_status = stock_status;

@@ -134,7 +134,7 @@ router.post('/pos/tables', (req: Request, res: Response) => {
     notifyTablesUpdated();
     return res.status(201).json({ success: true, table: newTable });
   } catch (err: any) {
-    return res.status(500).json({ success: false, error: 'Gagal menambahkan meja baru' });
+    return res.status(400).json({ success: false, error: err.message || 'Gagal menambahkan meja baru' });
   }
 });
 
@@ -493,6 +493,13 @@ router.post('/admin/menu', (req: Request, res: Response) => {
 router.put('/admin/menu/:id', (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id, 10);
+    const { price } = req.body;
+    if (price !== undefined) {
+      const numPrice = Number(price);
+      if (isNaN(numPrice) || numPrice < 0) {
+        return res.status(400).json({ success: false, error: 'Harga harus berupa angka positif' });
+      }
+    }
     const updated = db.updateMenuItem(id, req.body);
     if (!updated) return res.status(404).json({ success: false, error: 'Menu tidak ditemukan' });
     notifyStockChanged(updated);
@@ -700,7 +707,14 @@ router.put('/admin/users/:id', (req: Request, res: Response) => {
     const updates: any = {};
     if (name) updates.name = name.trim();
     if (role) updates.role = role;
-    if (username) updates.username = username.trim().toLowerCase();
+    if (username) {
+      const cleanUsername = username.trim().toLowerCase();
+      const existing = db.getUserByUsername(cleanUsername);
+      if (existing && existing.user_id !== id) {
+        return res.status(400).json({ success: false, error: 'Username sudah digunakan oleh akun lain' });
+      }
+      updates.username = cleanUsername;
+    }
     if (password && password.trim().length > 0) {
       const salt = bcrypt.genSaltSync(10);
       updates.password_hash = bcrypt.hashSync(password, salt);
@@ -731,7 +745,7 @@ router.delete('/admin/users/:id', (req: Request, res: Response) => {
     if (!success) return res.status(404).json({ success: false, error: 'Pengguna tidak ditemukan' });
     return res.json({ success: true, message: 'Pengguna berhasil dihapus' });
   } catch (err: any) {
-    return res.status(500).json({ success: false, error: 'Gagal menghapus pengguna' });
+    return res.status(400).json({ success: false, error: err.message || 'Gagal menghapus pengguna' });
   }
 });
 

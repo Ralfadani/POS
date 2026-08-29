@@ -196,7 +196,7 @@ export const AdminTransactions: React.FC = () => {
                   <span className="text-slate-500">Metode Bayar:</span>
                   <span className="font-bold text-slate-900 uppercase">{trxDetail.payment_method}</span>
                 </div>
-                {trxDetail.payment_method === 'tunai' && (
+                {trxDetail.payment_method?.toLowerCase() === 'tunai' && (
                   <>
                     <div className="flex justify-between">
                       <span className="text-slate-500">Uang Diterima:</span>

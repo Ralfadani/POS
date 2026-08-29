@@ -758,6 +758,14 @@ class DatabaseService {
   }
 
   deleteUser(id: number): boolean {
+    const targetUser = this.getUserById(id);
+    if (!targetUser) return false;
+
+    const adminCount = this.state.users.filter(u => u.role === 'admin').length;
+    if (targetUser.role === 'admin' && adminCount <= 1) {
+      throw new Error('Tidak dapat menghapus akun Admin terakhir pada sistem.');
+    }
+
     const initialLen = this.state.users.length;
     this.state.users = this.state.users.filter(u => u.user_id !== id);
     if (this.state.users.length !== initialLen) {
@@ -797,12 +805,25 @@ class DatabaseService {
   }
 
   createTable(tableNumber: string, capacity?: number, area?: string): Table {
+    const cleanNumber = tableNumber.trim();
+    const existing = this.state.tables.find(
+      t => t.table_number.toLowerCase() === cleanNumber.toLowerCase()
+    );
+    if (existing) {
+      throw new Error(`Nomor meja "${cleanNumber}" sudah digunakan.`);
+    }
+
+    const capNum = capacity ? Number(capacity) : 4;
+    if (isNaN(capNum) || capNum <= 0) {
+      throw new Error('Kapasitas meja harus berupa angka positif.');
+    }
+
     const table_id = this.state.nextIds.table++;
     const newTable: Table = {
       table_id,
-      table_number: tableNumber,
-      capacity: capacity ? Number(capacity) : 4,
-      area: area || 'Area Indoor',
+      table_number: cleanNumber,
+      capacity: capNum,
+      area: area ? area.trim() : 'Area Indoor',
       status: 'kosong'
     };
     this.state.tables.push(newTable);
@@ -1009,11 +1030,16 @@ class DatabaseService {
 
     const total = subtotal + service_charge + tax;
 
-    if (total > 0 && paymentData.payment_method === 'tunai' && paymentData.nominal < total) {
-      throw new Error(`Nominal pembayaran tunai (Rp ${paymentData.nominal.toLocaleString('id-ID')}) kurang dari total tagihan (Rp ${total.toLocaleString('id-ID')})`);
+    let actualNominal = paymentData.nominal;
+    if (paymentData.payment_method !== 'tunai') {
+      actualNominal = total;
     }
 
-    const change = paymentData.payment_method === 'tunai' ? Math.max(0, paymentData.nominal - total) : 0;
+    if (total > 0 && paymentData.payment_method === 'tunai' && actualNominal < total) {
+      throw new Error(`Nominal pembayaran tunai (Rp ${actualNominal.toLocaleString('id-ID')}) kurang dari total tagihan (Rp ${total.toLocaleString('id-ID')})`);
+    }
+
+    const change = paymentData.payment_method === 'tunai' ? Math.max(0, actualNominal - total) : 0;
 
     // Mark session as closed
     session.status = 'ditutup';
@@ -1129,14 +1155,15 @@ class DatabaseService {
         throw new Error(`Menu "${menuItem.name}" sedang habis.`);
       }
 
+      const qty = Math.max(1, Math.floor(Number(itemInput.quantity) || 1));
       const order_item_id = this.state.nextIds.order_item++;
-      const subtotal = Number(menuItem.price) * itemInput.quantity;
+      const subtotal = Number(menuItem.price) * qty;
 
       const orderItem: OrderItem = {
         order_item_id,
         order_id,
         item_id: itemInput.item_id,
-        quantity: itemInput.quantity,
+        quantity: qty,
         notes: itemInput.notes || '',
         subtotal,
         item_name: menuItem.name,
@@ -1200,6 +1227,10 @@ class DatabaseService {
     if (order.status === 'dibatalkan') throw new Error('Pesanan sudah dibatalkan sebelumnya');
 
     const session = this.getSessionById(order.session_id);
+    if (session && session.status === 'ditutup') {
+      throw new Error('Sesi meja sudah ditutup/dibayar. Pesanan tidak dapat dibatalkan.');
+    }
+
     const user = this.getUserById(data.cancelled_by);
     const userName = data.cancelled_by_name || (user ? user.name : 'Kasir POS');
     const category = data.reason_category || 'Pelanggan Batal Order';

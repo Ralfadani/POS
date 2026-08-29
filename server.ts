@@ -48,7 +48,7 @@ async function startServer() {
     });
   }
 
-  httpServer.listen(PORT, '0.0.0.0', () => {
+  httpServer.listen(Number(PORT), '0.0.0.0', () => {
     console.log(`🚀 Cafe POS Server running on http://0.0.0.0:${PORT}`);
   });
 }

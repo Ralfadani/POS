@@ -21,9 +21,6 @@ import {
   RotateCcw,
   Sliders,
   Coffee,
-  Utensils,
-  Flame,
-  Heart,
   Info,
   Lock,
   FileText
@@ -53,11 +50,7 @@ const DEFAULT_CONFIG: TaxServiceConfig = {
 };
 
 export const AdminSettings: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'identity' | 'tax' | 'preview' | 'appscript'>('identity');
-  const [copiedCodeGs, setCopiedCodeGs] = useState(false);
-  const [copiedIndexHtml, setCopiedIndexHtml] = useState(false);
-  const [codeGsContent, setCodeGsContent] = useState('');
-  const [indexHtmlContent, setIndexHtmlContent] = useState('');
+  const [activeTab, setActiveTab] = useState<'identity' | 'tax' | 'preview'>('identity');
   const [profile, setProfile] = useState<CafeProfile>(DEFAULT_PROFILE);
   const [config, setConfig] = useState<TaxServiceConfig>(DEFAULT_CONFIG);
   const [loading, setLoading] = useState(true);
@@ -199,15 +192,6 @@ export const AdminSettings: React.FC = () => {
     : 0;
   const sampleTotal = sampleSubtotal + sampleService + sampleTax;
 
-  const iconOptions = [
-    { id: 'Coffee', label: 'Kopi & Cafe', icon: Coffee },
-    { id: 'Store', label: 'Resto & Toko', icon: Store },
-    { id: 'Utensils', label: 'Eatery & Dining', icon: Utensils },
-    { id: 'Flame', label: 'Grill & Bakery', icon: Flame },
-    { id: 'Heart', label: 'Boutique Cafe', icon: Heart },
-    { id: 'Sparkles', label: 'Lounge & Bar', icon: Sparkles }
-  ];
-
   if (loading) {
     return (
       <div className="py-16 text-center text-slate-400">
@@ -313,18 +297,6 @@ export const AdminSettings: React.FC = () => {
           <FileText className="w-3.5 h-3.5" />
           <span>3. Live Preview Struk & Brand</span>
         </button>
-
-        <button
-          onClick={() => setActiveTab('appscript')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shrink-0 ${
-            activeTab === 'appscript'
-              ? 'bg-emerald-600 text-white shadow-xs'
-              : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200/80'
-          }`}
-        >
-          <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-          <span>4. 📦 Google Apps Script (100% Gratis Sheets)</span>
-        </button>
       </div>
 
       {/* Main Grid View */}
@@ -361,36 +333,7 @@ export const AdminSettings: React.FC = () => {
                     placeholder="Contoh: Specialty Coffee, Eatery & Creative Space"
                     value={profile.tagline}
                     onChange={e => setProfile(prev => ({ ...prev, tagline: e.target.value }))}
-                    helperText="Slogan singkat yang memperkuat karakter bisnis F&B Anda."
-                  />
-
-                  {/* Icon Brand Selection */}
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-                      Pilihan Icon / Simbol Brand
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {iconOptions.map(opt => {
-                        const IconComponent = opt.icon;
-                        const isSelected = (profile.logo_icon || 'Coffee') === opt.id;
-                        return (
-                          <button
-                            type="button"
-                            key={opt.id}
-                            onClick={() => setProfile(prev => ({ ...prev, logo_icon: opt.id }))}
-                            className={`p-2.5 rounded-xl border flex items-center space-x-2 text-xs font-semibold transition-all ${
-                              isSelected
-                                ? 'border-[#1A3A5C] bg-blue-50/70 text-[#1A3A5C] ring-1 ring-[#1A3A5C]'
-                                : 'border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
-                            }`}
-                          >
-                            <IconComponent className="w-4 h-4 shrink-0" />
-                            <span className="truncate">{opt.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                    />
                 </div>
               </Card>
 
@@ -620,187 +563,6 @@ export const AdminSettings: React.FC = () => {
                   Format struk kasir otomatis menyesuaikan nama cafe, tagline, alamat, nomor telepon, rincian biaya layanan & PB1, informasi WiFi tamu, dan pesan penutup yang Anda simpan.
                 </p>
               </Card>
-            </div>
-          )}
-
-          {/* TAB 4: GOOGLE APPS SCRIPT (100% GRATIS HOSTING GOOGLE SHEETS) */}
-          {activeTab === 'appscript' && (
-            <div className="space-y-5">
-              {/* Banner Penjelasan */}
-              <Card className="p-4 sm:p-5 bg-gradient-to-r from-emerald-950 via-[#1A3A5C] to-slate-900 text-white rounded-2xl border-none shadow-md space-y-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-black text-lg shrink-0">
-                    📊
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">
-                      Google Cloud &amp; Sheets Native
-                    </span>
-                    <h3 className="text-sm sm:text-base font-extrabold text-white mt-0.5">
-                      Sistem POS Cafe Berbasis Google Apps Script (100% Gratis Seumur Hidup)
-                    </h3>
-                  </div>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Semua data tersimpan otomatis di akun Google Drive / Google Sheets Anda sendiri. Anda tidak perlu membayar hosting bulanan atau database pihak ketiga. Siap digunakan oleh kasir di tablet dan pelanggan scan QR di meja!
-                </p>
-              </Card>
-
-              {/* 5 Langkah Mudah Setup */}
-              <Card className="p-4 sm:p-5 space-y-4 shadow-2xs border-slate-200">
-                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-emerald-600" />
-                  <span>5 Langkah Mudah Deploy ke Google Apps Script:</span>
-                </h4>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
-                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black inline-flex items-center justify-center mr-1">1</span>
-                    <strong className="text-slate-900">Buat Spreadsheet Baru</strong>
-                    <p className="text-[11px] text-slate-500">Buka <a href="https://sheets.new" target="_blank" rel="noreferrer" className="text-blue-600 font-bold underline">sheets.new</a> di browser Anda dan beri nama Spreadsheet.</p>
-                  </div>
-
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
-                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black inline-flex items-center justify-center mr-1">2</span>
-                    <strong className="text-slate-900">Buka Apps Script</strong>
-                    <p className="text-[11px] text-slate-500">Di menu atas Spreadsheet, klik <strong>Ekstensi (Extensions)</strong> &gt; <strong>Apps Script</strong>.</p>
-                  </div>
-
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
-                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black inline-flex items-center justify-center mr-1">3</span>
-                    <strong className="text-slate-900">Paste Code.gs &amp; Index.html</strong>
-                    <p className="text-[11px] text-slate-500">Salin kode dari tombol di bawah ke dalam file <code>Code.gs</code> dan buat file HTML <code>Index.html</code>.</p>
-                  </div>
-
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
-                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black inline-flex items-center justify-center mr-1">4</span>
-                    <strong className="text-slate-900">Jalankan setupDatabase()</strong>
-                    <p className="text-[11px] text-slate-500">Pilih fungsi <code>setupDatabase</code> di dropdown lalu klik <strong>Jalankan (Run)</strong> untuk buat sheet otomatis.</p>
-                  </div>
-
-                  <div className="p-3 sm:col-span-2 bg-emerald-50 rounded-xl border border-emerald-200 space-y-1">
-                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black inline-flex items-center justify-center mr-1">5</span>
-                    <strong className="text-emerald-950">Deploy Web App (Selesai!)</strong>
-                    <p className="text-[11px] text-emerald-800">Klik <strong>Deploy</strong> &gt; <strong>New deployment</strong> &gt; pilih <strong>Web app</strong> (Execute as: <em>Me</em>, Access: <em>Anyone</em>). Salin URL Web App untuk kasir dan QR meja!</p>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Code Copiers */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Code.gs Box */}
-                <Card className="p-4 sm:p-5 space-y-3 shadow-2xs border-slate-200 flex flex-col justify-between">
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
-                        <FileText className="w-4 h-4 text-blue-600" />
-                        <span>1. File Code.gs (Backend)</span>
-                      </h4>
-                      <span className="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded border border-blue-200/60">
-                        Apps Script
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500">
-                      Berisi logika REST API, autentikasi kasir, CRUD menu &amp; meja, perhitungan pajak, dan penyimpanan langsung ke Google Sheets.
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      try {
-                        let text = codeGsContent;
-                        if (!text) {
-                          const res = await fetch('/appscript/Code.gs');
-                          text = await res.text();
-                          setCodeGsContent(text);
-                        }
-                        await navigator.clipboard.writeText(text);
-                        setCopiedCodeGs(true);
-                        setTimeout(() => setCopiedCodeGs(false), 3000);
-                      } catch (err) {
-                        alert('Gagal menyalin. Silakan buka file /appscript/Code.gs secara manual.');
-                      }
-                    }}
-                    className="w-full h-10 px-4 rounded-xl text-xs font-bold bg-[#1A3A5C] hover:bg-[#132c47] text-white flex items-center justify-center gap-2 transition-colors shadow-2xs cursor-pointer"
-                  >
-                    {copiedCodeGs ? (
-                      <>
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                        <span>Tersalin ke Clipboard!</span>
-                      </>
-                    ) : (
-                      <>
-                        <FileText className="w-4 h-4 text-white" />
-                        <span>Salin Kode Code.gs</span>
-                      </>
-                    )}
-                  </button>
-                </Card>
-
-                {/* Index.html Box */}
-                <Card className="p-4 sm:p-5 space-y-3 shadow-2xs border-slate-200 flex flex-col justify-between">
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
-                        <Sparkles className="w-4 h-4 text-emerald-600" />
-                        <span>2. File Index.html (Frontend UI)</span>
-                      </h4>
-                      <span className="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded border border-emerald-200/60">
-                        HTML + Tailwind
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500">
-                      Tampilan lengkap Self-Order QR Pelanggan, POS Kasir Tablet, dan Admin Management responsive.
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      try {
-                        let text = indexHtmlContent;
-                        if (!text) {
-                          const res = await fetch('/appscript/Index.html');
-                          text = await res.text();
-                          setIndexHtmlContent(text);
-                        }
-                        await navigator.clipboard.writeText(text);
-                        setCopiedIndexHtml(true);
-                        setTimeout(() => setCopiedIndexHtml(false), 3000);
-                      } catch (err) {
-                        alert('Gagal menyalin. Silakan buka file /appscript/Index.html secara manual.');
-                      }
-                    }}
-                    className="w-full h-10 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-2 transition-colors shadow-2xs cursor-pointer"
-                  >
-                    {copiedIndexHtml ? (
-                      <>
-                        <CheckCircle2 className="w-4 h-4 text-emerald-200" />
-                        <span>Tersalin ke Clipboard!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-4 h-4 text-white" />
-                        <span>Salin Kode Index.html</span>
-                      </>
-                    )}
-                  </button>
-                </Card>
-              </div>
-
-              {/* Tips & Akun Default */}
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-600 space-y-1.5">
-                <h5 className="font-bold text-slate-800 flex items-center gap-1.5">
-                  <Info className="w-4 h-4 text-slate-500" />
-                  <span>Akun Login Kasir &amp; Admin Bawaan (Default):</span>
-                </h5>
-                <ul className="list-disc list-inside space-y-0.5 text-[11px] text-slate-600 pl-1">
-                  <li><strong>Admin:</strong> Username: <code>admin</code> | PIN: <code>1234</code></li>
-                  <li><strong>Kasir 1:</strong> Username: <code>kasir1</code> | PIN: <code>1234</code></li>
-                  <li><strong>Kasir 2:</strong> Username: <code>kasir2</code> | PIN: <code>1234</code></li>
-                </ul>
-              </div>
             </div>
           )}
 
