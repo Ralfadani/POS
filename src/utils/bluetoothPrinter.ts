@@ -304,6 +304,30 @@ class EscPosEncoder {
     return this;
   }
 
+  // Print QR Code
+  qrcode(url: string, size: number = 6) {
+    const textBytes = new TextEncoder().encode(url);
+    const storeLen = textBytes.length + 3;
+    const pL = storeLen & 0xff;
+    const pH = (storeLen >> 8) & 0xff;
+
+    // 1. Select model (Model 2)
+    this.buffer.push(0x1d, 0x28, 0x6b, 0x04, 0x00, 0x31, 0x41, 0x32, 0x00);
+    // 2. Set dot size
+    this.buffer.push(0x1d, 0x28, 0x6b, 0x03, 0x00, 0x31, 0x43, size);
+    // 3. Set Error Correction (48=L, 49=M, 50=Q, 51=H)
+    this.buffer.push(0x1d, 0x28, 0x6b, 0x03, 0x00, 0x31, 0x45, 48);
+    // 4. Store data
+    this.buffer.push(0x1d, 0x28, 0x6b, pL, pH, 0x31, 0x50, 0x30);
+    for (const b of textBytes) {
+      this.buffer.push(b);
+    }
+    // 5. Print
+    this.buffer.push(0x1d, 0x28, 0x6b, 0x03, 0x00, 0x31, 0x51, 0x30);
+    
+    return this;
+  }
+
   // Build Uint8Array
   encode(): Uint8Array {
     return new Uint8Array(this.buffer);
@@ -484,4 +508,52 @@ export async function printTestReceiptBluetooth(): Promise<boolean> {
   };
 
   return printReceiptBluetooth(testData);
+}
+/**
+ * Print Table Stand QR via connected Bluetooth Printer
+ */
+export async function printTableQRBluetooth(
+  tableNumber: string,
+  area: string,
+  qrUrl: string,
+  cafeName: string = 'BREW & BYTE CAFE',
+  customConfig?: Partial<BluetoothPrinterConfig>
+): Promise<boolean> {
+  const cfg = { ...getStoredPrinterConfig(), ...customConfig };
+  const maxLen = cfg.paperWidth === '80mm' ? 48 : 32;
+
+  const encoder = new EscPosEncoder();
+  encoder.init();
+
+  // Header Info
+  encoder.align('center').bold(true).textSize(2, 2).text(cafeName).line();
+  encoder.textSize(1, 1).bold(false);
+  encoder.text(area).line(2);
+
+  encoder.divider('=', maxLen);
+  encoder.bold(true).text('*** QR STAND MEJA ***').line();
+  encoder.textSize(2, 2).text(tableNumber).line();
+  encoder.textSize(1, 1).bold(false);
+  encoder.divider('=', maxLen);
+  
+  encoder.text('Scan QR di bawah untuk memesan').line();
+  encoder.text('mandiri (Self-Order)').line(2);
+
+  // Print QR Code
+  encoder.qrcode(qrUrl, 8).line(2);
+
+  encoder.divider('-', maxLen);
+  encoder.bold(true).text('Silakan scan QR untuk melihat').line();
+  encoder.text('menu & memesan langsung').line();
+  encoder.text('dari smartphone Anda.').line();
+  encoder.bold(false);
+  encoder.line(1);
+  encoder.text('Pesanan masuk ke Dapur otomatis').line();
+  encoder.divider('-', maxLen);
+  
+  encoder.text('--- Struk QR Meja ---').line();
+  encoder.cut();
+
+  const buffer = encoder.encode();
+  return sendRawEscPosData(buffer);
 }

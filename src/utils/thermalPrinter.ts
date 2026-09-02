@@ -29,7 +29,25 @@ export interface PrintReceiptData {
   payment?: Payment;
 }
 
-export function printThermalReceipt(data: PrintReceiptData) {
+export async function printThermalReceipt(data: PrintReceiptData) {
+  // Fetch latest cafe profile if missing or to ensure sync
+  try {
+    const res = await fetch('/api/admin/settings');
+    const settings = await res.json();
+    if (settings.success && settings.profile) {
+      data.cafeName = settings.profile.cafe_name || data.cafeName;
+      data.cafeAddress = settings.profile.address || data.cafeAddress;
+      data.cafePhone = settings.profile.phone || data.cafePhone;
+      data.tagline = settings.profile.tagline || data.tagline;
+      data.wifiSsid = settings.profile.wifi_ssid || data.wifiSsid;
+      data.wifiPassword = settings.profile.wifi_password || data.wifiPassword;
+      data.receiptFooter = settings.profile.receipt_footer || data.receiptFooter;
+      data.instagram = settings.profile.instagram || data.instagram;
+    }
+  } catch (err) {
+    console.error('Failed to fetch cafe profile for printing:', err);
+  }
+
   // Check if Bluetooth Printer is connected and handle direct ESC/POS print
   if (isPrinterConnected()) {
     const cfg = getStoredPrinterConfig();

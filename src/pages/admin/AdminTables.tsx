@@ -22,6 +22,7 @@ import {
   Coffee
 } from 'lucide-react';
 import { printHtmlDirectly } from '../../utils/printUtils.js';
+import { isPrinterConnected, printTableQRBluetooth } from '../../utils/bluetoothPrinter.js';
 import { POSOpenSessionModal } from '../pos/POSOpenSessionModal.js';
 import { POSTableAddModal } from '../pos/POSTableAddModal.js';
 
@@ -484,12 +485,29 @@ export const AdminTables: React.FC = () => {
               <Button
                 variant="primary"
                 size="sm"
-                onClick={() => {
-                  // Ambil URL gambar QR dari img element
-                  const imgEl = document.querySelector('#table-stand-printable img') as HTMLImageElement | null;
-                  const qrSrc = imgEl?.src || '';
+                onClick={async () => {
                   const tableNum = qrStandTable.table_number;
                   const area = qrStandTable.area || 'Area Indoor';
+                  const qrUrl = window.location.origin + '/?view=customer&table_id=' + qrStandTable.table_id;
+
+                  if (isPrinterConnected()) {
+                    try {
+                      // Fetch latest cafe name
+                      const res = await fetch('/api/admin/settings');
+                      const settings = await res.json();
+                      const cafeName = settings.success && settings.profile ? settings.profile.cafe_name : 'BREW & BYTE CAFE';
+                      
+                      await printTableQRBluetooth(tableNum, area, qrUrl, cafeName);
+                      alert('Berhasil mengirim Stand QR ke printer Bluetooth!');
+                    } catch (err: any) {
+                      alert('Gagal cetak QR via Bluetooth: ' + err.message);
+                    }
+                    return;
+                  }
+
+                  // Fallback: Browser Print
+                  const imgEl = document.querySelector('#table-stand-printable img') as HTMLImageElement | null;
+                  const qrSrc = imgEl?.src || '';
                   const html = `
   <div class="center">
     <div class="cafe-name">BREW &amp; BYTE CAFE</div>
