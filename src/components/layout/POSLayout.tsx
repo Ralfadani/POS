@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext.js';
 import { Button } from '../ui/Button.js';
-import { UtensilsCrossed, LogOut, Shield, PackageOpen, Bell, RefreshCw, Volume2, VolumeX, Grid, ReceiptText } from 'lucide-react';
+import { UtensilsCrossed, LogOut, Shield, PackageOpen, Bell, RefreshCw, Volume2, VolumeX, Grid, ReceiptText, Printer, Bluetooth } from 'lucide-react';
 import { formatDateTime } from '../../utils/formatters.js';
+import { subscribePrinterStatus, isBluetoothSupported } from '../../utils/bluetoothPrinter.js';
+import { POSPrinterSettingsModal } from '../pos/POSPrinterSettingsModal.js';
 
 interface POSLayoutProps {
   children: React.ReactNode;
@@ -23,6 +25,9 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
   const [currentTime, setCurrentTime] = useState(new Date().toISOString());
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [cafeName, setCafeName] = useState('BREW & BYTE');
+  const [isPrinterModalOpen, setIsPrinterModalOpen] = useState(false);
+  const [btConnected, setBtConnected] = useState(false);
+  const [btDeviceName, setBtDeviceName] = useState('');
 
   useEffect(() => {
     fetch('/api/cafe-profile')
@@ -40,6 +45,15 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
       setCurrentTime(new Date().toISOString());
     }, 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Subscribe to Bluetooth printer status changes
+  useEffect(() => {
+    const unsubscribe = subscribePrinterStatus((connected, name) => {
+      setBtConnected(connected);
+      setBtDeviceName(name);
+    });
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -101,6 +115,27 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
 
         {/* Right side status and cashier info */}
         <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
+          {/* Bluetooth Printer Button */}
+          {isBluetoothSupported() && (
+            <button
+              onClick={() => setIsPrinterModalOpen(true)}
+              title={btConnected ? `Printer: ${btDeviceName} (Terhubung)` : 'Pengaturan Printer Bluetooth'}
+              className={`relative p-1.5 rounded-lg transition-colors text-xs flex items-center gap-1.5 ${
+                btConnected
+                  ? 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/30'
+                  : 'text-slate-300 hover:text-white bg-white/10'
+              }`}
+            >
+              <Printer className="w-4 h-4" />
+              {btConnected && (
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#1A3A5C] animate-pulse"></span>
+              )}
+              <span className="hidden md:inline text-[10px] font-bold">
+                {btConnected ? 'BT' : 'Printer'}
+              </span>
+            </button>
+          )}
+
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
             title={soundEnabled ? 'Suara notifikasi aktif' : 'Suara notifikasi nonaktif'}
@@ -141,6 +176,12 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
 
       {/* Main Screen Content */}
       <main className="flex-1 p-3 sm:p-4 lg:p-5 overflow-hidden flex flex-col min-h-0">{children}</main>
+
+      {/* Bluetooth Printer Settings Modal */}
+      <POSPrinterSettingsModal
+        isOpen={isPrinterModalOpen}
+        onClose={() => setIsPrinterModalOpen(false)}
+      />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { formatRupiah, formatDateTime } from './formatters.js';
 import { Order, Payment, CalculationBreakdown } from '../types/index.js';
+import { isPrinterConnected, printReceiptBluetooth, getStoredPrinterConfig } from './bluetoothPrinter.js';
 
 export interface PrintReceiptData {
   type: 'order_kitchen' | 'customer_invoice' | 'kitchen_slip' | 'draft_bill';
@@ -29,6 +30,29 @@ export interface PrintReceiptData {
 }
 
 export function printThermalReceipt(data: PrintReceiptData) {
+  // Check if Bluetooth Printer is connected and handle direct ESC/POS print
+  if (isPrinterConnected()) {
+    const cfg = getStoredPrinterConfig();
+    const isKitchen = data.type === 'order_kitchen' || data.type === 'kitchen_slip';
+    const shouldPrint = isKitchen ? cfg.autoPrintKitchen !== false : cfg.autoPrintReceipt !== false;
+
+    if (shouldPrint) {
+      printReceiptBluetooth(data)
+        .then(() => {
+          console.log('Printed successfully via Bluetooth Printer.');
+        })
+        .catch(err => {
+          console.warn('Bluetooth print failed, falling back to Browser print:', err);
+          printThermalBrowserFallback(data);
+        });
+      return;
+    }
+  }
+
+  printThermalBrowserFallback(data);
+}
+
+export function printThermalBrowserFallback(data: PrintReceiptData) {
   const isKitchen = data.type === 'order_kitchen' || data.type === 'kitchen_slip';
   const isDraft = data.type === 'draft_bill';
   const isInvoice = data.type === 'customer_invoice';

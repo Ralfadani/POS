@@ -5,6 +5,17 @@ import { Input } from '../../components/ui/Input.js';
 import { TaxServiceConfig, CafeProfile } from '../../types/index.js';
 import { printThermalReceipt } from '../../utils/thermalPrinter.js';
 import {
+  isBluetoothSupported,
+  isPrinterConnected,
+  getStoredPrinterConfig,
+  savePrinterConfig,
+  scanAndConnectBluetoothPrinter,
+  disconnectBluetoothPrinter,
+  printTestReceiptBluetooth,
+  subscribePrinterStatus,
+  BluetoothPrinterConfig
+} from '../../utils/bluetoothPrinter.js';
+import {
   Store,
   MapPin,
   Phone,
@@ -23,7 +34,12 @@ import {
   Coffee,
   Info,
   Lock,
-  FileText
+  FileText,
+  Bluetooth,
+  BluetoothOff,
+  RefreshCw,
+  Zap,
+  HelpCircle
 } from 'lucide-react';
 
 const DEFAULT_PROFILE: CafeProfile = {
@@ -50,7 +66,16 @@ const DEFAULT_CONFIG: TaxServiceConfig = {
 };
 
 export const AdminSettings: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'identity' | 'tax' | 'preview'>('identity');
+  const [activeTab, setActiveTab] = useState<'identity' | 'tax' | 'preview' | 'bluetooth'>('identity');
+
+  // Bluetooth Printer state
+  const [btSupported, setBtSupported] = useState(true);
+  const [btConnected, setBtConnected] = useState(false);
+  const [btDeviceName, setBtDeviceName] = useState('');
+  const [btConfig, setBtConfig] = useState<BluetoothPrinterConfig>(getStoredPrinterConfig());
+  const [btScanning, setBtScanning] = useState(false);
+  const [btTesting, setBtTesting] = useState(false);
+  const [btMessage, setBtMessage] = useState<{ text: string; type: 'info' | 'success' | 'error' } | null>(null);
   const [profile, setProfile] = useState<CafeProfile>(DEFAULT_PROFILE);
   const [config, setConfig] = useState<TaxServiceConfig>(DEFAULT_CONFIG);
   const [loading, setLoading] = useState(true);
@@ -76,6 +101,13 @@ export const AdminSettings: React.FC = () => {
 
   useEffect(() => {
     fetchSettings();
+    setBtSupported(isBluetoothSupported());
+    setBtConfig(getStoredPrinterConfig());
+    const unsubscribe = subscribePrinterStatus((connected, name) => {
+      setBtConnected(connected);
+      setBtDeviceName(name);
+    });
+    return () => unsubscribe();
   }, []);
 
   const handleSave = async (e?: React.FormEvent) => {
@@ -296,6 +328,21 @@ export const AdminSettings: React.FC = () => {
         >
           <FileText className="w-3.5 h-3.5" />
           <span>3. Live Preview Struk & Brand</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('bluetooth')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shrink-0 ${
+            activeTab === 'bluetooth'
+              ? 'bg-[#1A3A5C] text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Bluetooth className="w-3.5 h-3.5" />
+          <span>4. Printer Bluetooth</span>
+          {btConnected && (
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          )}
         </button>
       </div>
 
@@ -740,6 +787,259 @@ export const AdminSettings: React.FC = () => {
           </div>
         </div>
       </form>
+
+      {/* TAB 4: BLUETOOTH PRINTER SETTINGS */}
+      {activeTab === 'bluetooth' && (
+        <div className="max-w-3xl space-y-5">
+          {/* Browser Support Warning */}
+          {!btSupported && (
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3 text-amber-800 text-xs">
+              <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+              <div>
+                <strong className="font-bold block mb-1">Browser Tidak Mendukung Web Bluetooth API</strong>
+                Fitur cetak langsung Bluetooth membutuhkan browser berbasis Chromium (Google Chrome / Microsoft Edge). Anda tetap dapat mencetak struk menggunakan dialog cetak standar browser.
+              </div>
+            </div>
+          )}
+
+          {/* Status Message Alert */}
+          {btMessage && (
+            <div
+              className={`p-3.5 rounded-xl border flex items-start gap-3 text-xs font-semibold ${
+                btMessage.type === 'success'
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                  : btMessage.type === 'error'
+                  ? 'bg-red-50 border-red-200 text-red-700'
+                  : 'bg-sky-50 border-sky-200 text-sky-700'
+              }`}
+            >
+              {btMessage.type === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />}
+              {btMessage.type === 'error' && <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />}
+              {btMessage.type === 'info' && <Info className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />}
+              <span>{btMessage.text}</span>
+            </div>
+          )}
+
+          {/* Connection Card */}
+          <Card className="p-5 space-y-4 shadow-2xs">
+            <div className="flex items-center space-x-2.5 pb-3 border-b border-slate-100">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
+                btConnected ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'
+              }`}>
+                {btConnected ? <Bluetooth className="w-4 h-4" /> : <BluetoothOff className="w-4 h-4" />}
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-bold text-slate-900">Koneksi Printer Bluetooth</h3>
+                <p className="text-[11px] text-slate-500">Hubungkan printer thermal nirkabel untuk pencetakan struk otomatis</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex items-center space-x-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                  btConnected
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-500'
+                    : 'bg-slate-100 border-slate-200 text-slate-400'
+                }`}>
+                  {btConnected ? <Bluetooth className="w-5 h-5" /> : <BluetoothOff className="w-5 h-5" />}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-slate-500">Status:</span>
+                    {btConnected ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Terhubung
+                      </span>
+                    ) : (
+                      <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">Terputus</span>
+                    )}
+                  </div>
+                  <h4 className="text-sm font-bold text-slate-900 mt-0.5">
+                    {btConnected ? btDeviceName || btConfig.deviceName : 'Belum Ada Printer Terhubung'}
+                  </h4>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                {!btConnected ? (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setBtScanning(true);
+                      setBtMessage({ text: 'Membuka pencarian Bluetooth...', type: 'info' });
+                      const res = await scanAndConnectBluetoothPrinter();
+                      setBtScanning(false);
+                      setBtMessage({
+                        text: res.message || (res.success ? 'Terhubung!' : 'Gagal.'),
+                        type: res.success ? 'success' : 'error'
+                      });
+                      setBtConfig(getStoredPrinterConfig());
+                    }}
+                    disabled={btScanning || !btSupported}
+                    className="px-4 py-2 bg-[#1A3A5C] hover:bg-[#132c47] disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-2 transition-all"
+                  >
+                    {btScanning ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Bluetooth className="w-4 h-4" />}
+                    <span>{btScanning ? 'Mencari...' : 'Cari & Hubungkan Printer'}</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      disconnectBluetoothPrinter();
+                      setBtMessage({ text: 'Printer Bluetooth berhasil diputuskan.', type: 'info' });
+                    }}
+                    className="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5"
+                  >
+                    <BluetoothOff className="w-3.5 h-3.5" />
+                    <span>Putuskan Koneksi</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Test Print */}
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-between flex-wrap gap-2">
+              <span className="text-xs text-slate-500">Pengujian koneksi & format hasil cetak struk:</span>
+              <button
+                type="button"
+                onClick={async () => {
+                  setBtTesting(true);
+                  setBtMessage({ text: 'Mengirim struk uji coba...', type: 'info' });
+                  try {
+                    await printTestReceiptBluetooth();
+                    setBtMessage({ text: 'Struk uji coba berhasil dikirim ke printer!', type: 'success' });
+                  } catch (err: any) {
+                    setBtMessage({ text: err.message || 'Gagal mencetak struk uji coba.', type: 'error' });
+                  } finally {
+                    setBtTesting(false);
+                  }
+                }}
+                disabled={btTesting || !btConnected}
+                className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-[#1A3A5C] text-xs font-bold rounded-lg border border-slate-200 transition-all flex items-center gap-1.5"
+              >
+                {btTesting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+                <span>Uji Coba Cetak Struk (Test Print)</span>
+              </button>
+            </div>
+          </Card>
+
+          {/* Configuration Options */}
+          <Card className="p-5 space-y-4 shadow-2xs">
+            <div className="flex items-center space-x-2.5 pb-3 border-b border-slate-100">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1A3A5C] flex items-center justify-center font-bold">
+                <Sliders className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Konfigurasi Cetak</h3>
+                <p className="text-[11px] text-slate-500">Ukuran kertas, jumlah rangkap, dan mode cetak otomatis</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Paper Width */}
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-slate-700 block">Ukuran Kertas Thermal</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => { const c = savePrinterConfig({ paperWidth: '58mm' }); setBtConfig(c); }}
+                    className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all ${
+                      btConfig.paperWidth === '58mm'
+                        ? 'bg-[#1A3A5C]/10 border-[#1A3A5C] text-[#1A3A5C] shadow-xs'
+                        : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
+                    }`}
+                  >
+                    58mm (Standard)
+                    <span className="block text-[10px] font-normal text-slate-400 mt-0.5">32 Kolom Karakter</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { const c = savePrinterConfig({ paperWidth: '80mm' }); setBtConfig(c); }}
+                    className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all ${
+                      btConfig.paperWidth === '80mm'
+                        ? 'bg-[#1A3A5C]/10 border-[#1A3A5C] text-[#1A3A5C] shadow-xs'
+                        : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
+                    }`}
+                  >
+                    80mm (Lebar)
+                    <span className="block text-[10px] font-normal text-slate-400 mt-0.5">48 Kolom Karakter</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Print Copies */}
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-slate-700 block">Jumlah Rangkap Struk</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[1, 2, 3].map(count => (
+                    <button
+                      key={count}
+                      type="button"
+                      onClick={() => { const c = savePrinterConfig({ copies: count }); setBtConfig(c); }}
+                      className={`py-2.5 px-2 rounded-xl text-xs font-bold border transition-all ${
+                        btConfig.copies === count
+                          ? 'bg-[#1A3A5C]/10 border-[#1A3A5C] text-[#1A3A5C] shadow-xs'
+                          : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
+                      }`}
+                    >
+                      {count}x Struk
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Toggle Switches */}
+            <div className="space-y-2.5 pt-2">
+              <label className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
+                <div>
+                  <span className="text-xs font-bold text-slate-800 block">Auto-Print Struk Transaksi Kasir</span>
+                  <span className="text-[11px] text-slate-500">Otomatis mengirim data struk ke printer Bluetooth saat pembayaran selesai</span>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={btConfig.autoPrintReceipt}
+                  onChange={e => { const c = savePrinterConfig({ autoPrintReceipt: e.target.checked }); setBtConfig(c); }}
+                  className="w-4 h-4 rounded text-[#1A3A5C] bg-white border-slate-300 focus:ring-[#1A3A5C] cursor-pointer"
+                />
+              </label>
+
+              <label className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
+                <div>
+                  <span className="text-xs font-bold text-slate-800 block">Auto-Print Tiket Pesanan Dapur / Bar</span>
+                  <span className="text-[11px] text-slate-500">Otomatis mencetak tiket KOT ke printer Bluetooth saat pesanan baru masuk</span>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={btConfig.autoPrintKitchen}
+                  onChange={e => { const c = savePrinterConfig({ autoPrintKitchen: e.target.checked }); setBtConfig(c); }}
+                  className="w-4 h-4 rounded text-[#1A3A5C] bg-white border-slate-300 focus:ring-[#1A3A5C] cursor-pointer"
+                />
+              </label>
+            </div>
+          </Card>
+
+          {/* Troubleshooting Guide */}
+          <Card className="p-5 space-y-3 shadow-2xs">
+            <div className="flex items-center space-x-2.5 pb-3 border-b border-slate-100">
+              <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                <HelpCircle className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Panduan & Troubleshooting</h3>
+                <p className="text-[11px] text-slate-500">Tips menghubungkan printer thermal Bluetooth</p>
+              </div>
+            </div>
+            <ul className="list-disc pl-4 space-y-1.5 text-xs text-slate-600">
+              <li>Pastikan Bluetooth pada perangkat HP/Tablet/Laptop dan printer thermal dalam kondisi <strong>ON</strong>.</li>
+              <li>Sandingkan (<strong>Pair</strong>) printer Bluetooth terlebih dahulu pada Pengaturan Bluetooth Android / Windows jika diminta kode PIN (biasanya <code className="bg-slate-100 text-[#1A3A5C] font-mono px-1 py-0.5 rounded">0000</code> atau <code className="bg-slate-100 text-[#1A3A5C] font-mono px-1 py-0.5 rounded">1234</code>).</li>
+              <li>Klik tombol <strong>"Cari & Hubungkan Printer"</strong>, lalu pilih nama printer (misal: <em>POS-58, RPP02N, EPX, Xprinter</em>) pada popup dialog browser.</li>
+              <li>Printer harus mendukung protokol <strong>ESC/POS</strong> via Bluetooth Low Energy (BLE).</li>
+              <li>Jika Bluetooth tidak tersedia, sistem otomatis menggunakan mode cetak dialog browser (Window Print).</li>
+            </ul>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
