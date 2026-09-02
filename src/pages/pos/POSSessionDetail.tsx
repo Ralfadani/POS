@@ -5,6 +5,7 @@ import { formatRupiah, formatTime } from '../../utils/formatters.js';
 import { Button } from '../../components/ui/Button.js';
 import { Badge } from '../../components/ui/Badge.js';
 import { printThermalReceipt } from '../../utils/thermalPrinter.js';
+import { isPrinterConnected, printTableQRBluetooth } from '../../utils/bluetoothPrinter.js';
 import { POSCancelOrderModal } from './POSCancelOrderModal.js';
 import { POSCloseWithoutPaymentModal } from './POSCloseWithoutPaymentModal.js';
 import {
@@ -77,7 +78,23 @@ export const POSSessionDetail: React.FC<POSSessionDetailProps> = ({
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
-  const handlePrintQR = () => {
+  const handlePrintQR = async () => {
+    if (isPrinterConnected() && menuUrl) {
+      try {
+        const area = 'Meja POS';
+        const res = await fetch('/api/admin/settings');
+        const settings = await res.json();
+        const cafeName = settings.success && settings.profile ? settings.profile.cafe_name : 'BREW & BYTE CAFE';
+        
+        await printTableQRBluetooth(table.table_number, area, menuUrl, cafeName);
+        alert('Berhasil mengirim Stand QR ke printer Bluetooth!');
+        return;
+      } catch (err: any) {
+        alert('Gagal cetak QR via Bluetooth: ' + err.message);
+        return;
+      }
+    }
+
     const printWin = window.open('', '_blank', 'width=400,height=550');
     if (!printWin) {
       alert('Pop-up printer diblokir browser. Harap izinkan pop-up untuk mencetak QR Stand.');
